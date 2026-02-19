@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveKey - Mods & ROMs</title>
+    <!-- Iconos de FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Gradiente moderno oscuro/gaming */
+            background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        /* Barra de color superior */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+            transform-origin: left;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .card-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Colores específicos para cada categoría */
+        .card.nintendo .card-icon {
+            background: linear-gradient(135deg, #e60012 0%, #ffcb05 100%); /* Rojo/Amarillo Nintendo */
+        }
+
+        .card.playstation .card-icon {
+            background: linear-gradient(135deg, #003791 0%, #0070d1 100%); /* Azul PlayStation */
+        }
+
+        .card.minecraft .card-icon {
+            background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%); /* Verde Creeper */
+        }
+
+        .card.gta .card-icon {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); /* Verde GTA */
+        }
+
+        .card.retro .card-icon {
+            background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%); /* Morado Retro */
+        }
+
+        .card.tools .card-icon {
+            background: linear-gradient(135deg, #607d8b 0%, #cfd8dc 100%); /* Gris Herramientas */
+        }
+
+        .card h2 {
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        .card p {
+            color: #718096;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .card-arrow {
+            font-size: 1.5rem;
+            color: #b21f1f;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            align-self: center;
+            margin-top: auto;
+        }
+
+        .card:hover .card-arrow {
+            opacity: 1;
+        }
+
+       footer {
+        text-align: center;
+        color: white;
+        padding: 40px 20px; /* Un poco más de espacio arriba/abajo */
+        border-top: 1px solid rgba(255,255,255,0.1);
+        width: 100%;
+        backdrop-filter: blur(10px);
+        margin-top: auto; /* Empuja el footer al final si hay poco contenido */
+        }
+        footer p {
+        opacity: 0.8;
+        font-size: 0.9rem;
+        max-width: 1200px; /* Opcional: limita el ancho del TEXTO para que no se lea raro en pantallas gigantes */
+        margin: 0 auto;    /* Centra el texto */
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animación de entrada */
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-gamepad"></i> DriveKey</h1>
+            <p>Tu biblioteca de Mods, ROMs y Clásicos</p>
+        </header>
+
+        <div class="cards-grid">
+
+            <!-- Tarjeta 3: Minecraft Mods -->
+            <a href="Drives/Minecraftmods.html" target="_blank" class="card minecraft fade-in" style="animation-delay: 0.3s;">
+                <div class="card-icon">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <h2>Minecraft Mods</h2>
+                <p>Packs de texturas, mods de Forge/Fabric y mapas personalizados.</p>
+                <i class="fas fa-arrow-right card-arrow"></i>
+            </a>
+            
+            <!-- Tarjeta 1: Nintendo / Consolas -->
+            <!-- CAMBIA EL HREF POR TU LINK DE DRIVE REAL -->
+            <a href="Drives/PokemonROMS.html" target="_blank" class="card nintendo fade-in" style="animation-delay: 0.1s;">
+                <div class="card-icon">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <h2>Consolas Clásicas</h2>
+                <p>ROMs de NES, SNES, N64 y GameBoy. Juegos listos para emular.</p>
+                <i class="fas fa-arrow-right card-arrow"></i>
+            </a>
+
+                <!-- Tarjeta 6: Herramientas -->
+            <a href="Drives/Emuladores.html" target="_blank" class="card tools fade-in" style="animation-delay: 0.6s;">
+                <div class="card-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h2>Herramientas</h2>
+                <p>Emuladores, descompresores y software necesario para usar los archivos.</p>
+                <i class="fas fa-arrow-right card-arrow"></i>
+            </a>
+
+        
+
+            <!-- Tarjeta 2: PlayStation 
+            <a href="2.html" target="_blank" class="card playstation fade-in" style="animation-delay: 0.2s;">
+                <div class="card-icon">
+                    <i class="fab fa-playstation"></i>
+                </div>
+                <h2>PlayStation 1 & 2</h2>
+                <p>Imágenes ISO y parches para tus juegos favoritos de Sony.</p>
+                <i class="fas fa-arrow-right card-arrow"></i>
+            </a>
+
+        </div> -->
+        </div>
+        <footer>
+            <p>&copy; 2026 DriveKey Project</p>
+            <p style="margin-top: 10px;">
+                <i class="fas fa-info-circle"></i> Todos los archivos alojados en Google Drive seguro.
+            </p>
+        </footer>
+    
+
+    <script>
+        // Efecto extra al pasar el ratón (sonido opcional o vibración si fuera móvil)
+        const cards = document.querySelectorAll('.card');
+
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Aquí podrías añadir lógica extra si quisieras
+                console.log('Explorando categoría: ' + card.querySelector('h2').innerText);
+            });
+        });
+
+        // Nota para el futuro:
+        // Cuando quieras conectar la API real, borraremos estos enlaces estáticos
+        // y usaremos JavaScript para generar estas tarjetas leyendo tu carpeta principal.
+    </script>
+</body>
+</html>
