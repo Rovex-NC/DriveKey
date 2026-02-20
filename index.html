@@ -4,46 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DriveKey - Mods & ROMs</title>
-    <!-- Iconos de FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Gradiente moderno oscuro/gaming */
             background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 100%);
             min-height: 100vh;
-            padding: 40px 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 50px;
+            padding-top: 80px;
             color: white;
         }
 
+        /* === NAVBAR === */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: rgba(20, 20, 40, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #4facfe;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00f2fe, #4facfe);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .nav-links a:hover::after { width: 100%; }
+        .nav-links a:hover {
+            color: #4facfe;
+            text-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
+
+        .nav-upload {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 0.6rem 1.4rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .nav-upload::after { background: white !important; }
+
+        /* === CONTENIDO === */
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; margin-bottom: 50px; }
         header h1 {
             font-size: 3rem;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
             letter-spacing: 1px;
         }
-
-        header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            font-weight: 300;
-        }
+        header p { font-size: 1.2rem; opacity: 0.9; font-weight: 300; }
 
         .cards-grid {
             display: grid;
@@ -69,136 +127,211 @@
             height: 100%;
         }
 
-        /* Barra de color superior */
         .card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 6px;
+            top: 0; left: 0; width: 100%; height: 6px;
             background: linear-gradient(90deg, #ff416c, #ff4b2b);
             transform: scaleX(0);
             transition: transform 0.3s ease;
             transform-origin: left;
         }
-
-        .card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
+        .card:hover::before { transform: scaleX(1); }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
 
         .card-icon {
-            width: 90px;
-            height: 90px;
-            margin: 0 auto 25px;
+            width: 90px; height: 90px; margin: 0 auto 25px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; color: white;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        /* Colores específicos para cada categoría */
-        .card.nintendo .card-icon {
-            background: linear-gradient(135deg, #e60012 0%, #ffcb05 100%); /* Rojo/Amarillo Nintendo */
-        }
+        .card.nintendo .card-icon { background: linear-gradient(135deg, #e60012, #ffcb05); }
+        .card.playstation .card-icon { background: linear-gradient(135deg, #003791, #0070d1); }
+        .card.minecraft .card-icon { background: linear-gradient(135deg, #4caf50, #8bc34a); }
+        .card.gta .card-icon { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        .card.retro .card-icon { background: linear-gradient(135deg, #8e2de2, #4a00e0); }
+        .card.tools .card-icon { background: linear-gradient(135deg, #607d8b, #cfd8dc); }
 
-        .card.playstation .card-icon {
-            background: linear-gradient(135deg, #003791 0%, #0070d1 100%); /* Azul PlayStation */
-        }
-
-        .card.minecraft .card-icon {
-            background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%); /* Verde Creeper */
-        }
-
-        .card.gta .card-icon {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); /* Verde GTA */
-        }
-
-        .card.retro .card-icon {
-            background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%); /* Morado Retro */
-        }
-
-        .card.tools .card-icon {
-            background: linear-gradient(135deg, #607d8b 0%, #cfd8dc 100%); /* Gris Herramientas */
-        }
-
-        .card h2 {
-            font-size: 1.6rem;
-            margin-bottom: 12px;
-            color: #2d3748;
-            font-weight: 700;
-        }
-
-        .card p {
-            color: #718096;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-
+        .card h2 { font-size: 1.6rem; margin-bottom: 12px; color: #2d3748; font-weight: 700; }
+        .card p { color: #718096; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; }
         .card-arrow {
+            font-size: 1.5rem; color: #b21f1f; opacity: 0;
+            transition: opacity 0.3s ease; align-self: center; margin-top: auto;
+        }
+        .card:hover .card-arrow { opacity: 1; }
+
+        footer {
+            text-align: center; color: white; padding: 40px 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            width: 100%; backdrop-filter: blur(10px); margin-top: auto;
+        }
+        footer p { opacity: 0.8; font-size: 0.9rem; max-width: 1200px; margin: 0 auto; }
+
+        /* === MODAL MEJORADO === */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            animation: slideUp 0.4s ease;
+            position: relative;
+        }
+
+        .modal h3 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: white;
             font-size: 1.5rem;
-            color: #b21f1f;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            align-self: center;
-            margin-top: auto;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .card:hover .card-arrow {
-            opacity: 1;
+        .modal label {
+            color: white;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
 
-       footer {
-        text-align: center;
-        color: white;
-        padding: 40px 20px; /* Un poco más de espacio arriba/abajo */
-        border-top: 1px solid rgba(255,255,255,0.1);
-        width: 100%;
-        backdrop-filter: blur(10px);
-        margin-top: auto; /* Empuja el footer al final si hay poco contenido */
-        }
-        footer p {
-        opacity: 0.8;
-        font-size: 0.9rem;
-        max-width: 1200px; /* Opcional: limita el ancho del TEXTO para que no se lea raro en pantallas gigantes */
-        margin: 0 auto;    /* Centra el texto */
+        .modal input, .modal select {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: white;
+            color: #2d3748;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-weight: 500;
         }
 
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2.2rem;
-            }
-            
-            .cards-grid {
-                grid-template-columns: 1fr;
-            }
+        .modal input:focus, .modal select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
+            background: #f7fafc;
         }
 
-        /* Animación de entrada */
+        .modal select option {
+            color: #2d3748;
+            background: white;
+            padding: 10px;
+        }
+
+        .modal small {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .modal button {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal button:hover {
+            background: #2d3748;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .modal .error {
+            color: #ff6b6b;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            display: none;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .modal .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal .close-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: rotate(90deg);
+        }
+       
+        .upload-step { display: none; }
+        .upload-step.active { display: block; animation: fadeIn 0.3s; }
+
         .fade-in {
             animation: fadeIn 0.8s ease forwards;
             opacity: 0;
             transform: translateY(20px);
         }
-
         @keyframes fadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            nav { flex-direction: column; gap: 1rem; padding: 1rem; }
+            .nav-links { gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+            header h1 { font-size: 2.2rem; }
+            .cards-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+
+    <!-- === NAVBAR === -->
+    <nav>
+        <div class="nav-logo">
+            <i class="fas fa-key"></i> DriveKey
+        </div>
+        <ul class="nav-links">
+            <li><a href="nada.html">Nada</a></li>
+            <li><a href="#" class="nav-upload" id="openUpload"><i class="fas fa-cloud-upload-alt"></i> Subir archivos</a></li>
+        </ul>
+    </nav>
+
+    <!-- === CONTENIDO === -->
     <div class="container">
         <header>
             <h1><i class="fas fa-gamepad"></i> DriveKey</h1>
@@ -206,74 +339,293 @@
         </header>
 
         <div class="cards-grid">
-
-            <!-- Tarjeta 3: Minecraft Mods -->
             <a href="Drives/Minecraftmods.html" target="_blank" class="card minecraft fade-in" style="animation-delay: 0.3s;">
-                <div class="card-icon">
-                    <i class="fas fa-cube"></i>
-                </div>
+                <div class="card-icon"><i class="fas fa-cube"></i></div>
                 <h2>Minecraft Mods</h2>
                 <p>Packs de texturas, mods de Forge/Fabric y mapas personalizados.</p>
                 <i class="fas fa-arrow-right card-arrow"></i>
             </a>
             
-            <!-- Tarjeta 1: Nintendo / Consolas -->
-            <!-- CAMBIA EL HREF POR TU LINK DE DRIVE REAL -->
             <a href="Drives/PokemonROMS.html" target="_blank" class="card nintendo fade-in" style="animation-delay: 0.1s;">
-                <div class="card-icon">
-                    <i class="fas fa-gamepad"></i>
-                </div>
+                <div class="card-icon"><i class="fas fa-gamepad"></i></div>
                 <h2>Consolas Clásicas</h2>
                 <p>ROMs de NES, SNES, N64 y GameBoy. Juegos listos para emular.</p>
                 <i class="fas fa-arrow-right card-arrow"></i>
             </a>
 
-                <!-- Tarjeta 6: Herramientas -->
             <a href="Drives/Emuladores.html" target="_blank" class="card tools fade-in" style="animation-delay: 0.6s;">
-                <div class="card-icon">
-                    <i class="fas fa-tools"></i>
-                </div>
+                <div class="card-icon"><i class="fas fa-tools"></i></div>
                 <h2>Herramientas</h2>
                 <p>Emuladores, descompresores y software necesario para usar los archivos.</p>
                 <i class="fas fa-arrow-right card-arrow"></i>
             </a>
-
-        
-
-            <!-- Tarjeta 2: PlayStation 
-            <a href="2.html" target="_blank" class="card playstation fade-in" style="animation-delay: 0.2s;">
-                <div class="card-icon">
-                    <i class="fab fa-playstation"></i>
-                </div>
-                <h2>PlayStation 1 & 2</h2>
-                <p>Imágenes ISO y parches para tus juegos favoritos de Sony.</p>
-                <i class="fas fa-arrow-right card-arrow"></i>
-            </a>
-
-        </div> -->
         </div>
+
         <footer>
             <p>&copy; 2026 DriveKey Project</p>
             <p style="margin-top: 10px;">
                 <i class="fas fa-info-circle"></i> Todos los archivos alojados en Google Drive seguro.
             </p>
         </footer>
+    </div>
+
+    <!-- === MODAL DE SUBIDA === -->
+    <div class="modal-overlay" id="uploadModal">
+        <div class="modal">
+            <button class="close-btn" id="closeModal">&times;</button>
+            
+            <!-- Paso 1: Código -->
+            <div class="upload-step active" id="stepCode">
+                <h3><i class="fas fa-lock"></i> Acceso de subida</h3>
+                <p style="text-align:center; margin-bottom:1rem; opacity:0.9;">Introduce el código de seguridad</p>
+                <input type="password" id="accessCode" placeholder="Código de acceso" maxlength="8">
+                <p class="error" id="errorMsg"><i class="fas fa-exclamation-triangle"></i> Código incorrecto</p>
+                <button id="verifyCode">Verificar</button>
+            </div>
+
+            <!-- Paso 2: Subida -->
+            <div class="upload-step" id="stepUpload">
+                <h3><i class="fas fa-folder-plus"></i> Subir contenido</h3>
+                
+                <label style="display:block; margin-bottom:0.5rem; font-weight:500;">📁 Carpeta de destino:</label>
+                <select id="folderSelect">
+                    <option value="">-- Selecciona una carpeta --</option>
+                    <option value="minecraft"> Minecraft Mods</option>
+                    <option value="Pokemon"> Juegos Pokemon </option>
+                    <option value="emuladores"> Emuladores </option>
+                </select>
+
+                <label style="display:block; margin:1rem 0 0.5rem; font-weight:500;">📄 Archivo:</label>
+                <input type="file" id="fileInput">
+                <small style="display:block; margin-bottom:1rem; opacity:0.7;">* Selecciona el archivo a subir</small>
+
+                <button id="confirmUpload"><i class="fas fa-upload"></i> Confirmar subida</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // ============================================
+    // ⚠️ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT ⚠️
+    // ============================================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby18K8YRQKZUBvzdUdUwvl-09md8gElORIGQjVOH0fb8KubIC28FP4vWZBFfBP53hj7WA/exec';
     
+    const FOLDER_IDS = {
+        'minecraft': '1osB40eDY9Kjz50H6BII2vjsEIufPo6d-',
+        'Pokemon': '1yfYEp-k3k0OpLcewOFSoP3MryzsD5YRH',
+        'emuladores': '1OMG15Q-0wZWEE3tnaQ0renZ_Atrp2Pyr'
+    };
 
-    <script>
-        // Efecto extra al pasar el ratón (sonido opcional o vibración si fuera móvil)
-        const cards = document.querySelectorAll('.card');
+    const modal = document.getElementById('uploadModal');
+    const openBtn = document.getElementById('openUpload');
+    const closeBtn = document.getElementById('closeModal');
+    const verifyBtn = document.getElementById('verifyCode');
+    const accessCode = document.getElementById('accessCode');
+    const errorMsg = document.getElementById('errorMsg');
+    const stepCode = document.getElementById('stepCode');
+    const stepUpload = document.getElementById('stepUpload');
+    const confirmUpload = document.getElementById('confirmUpload');
+    const folderSelect = document.getElementById('folderSelect');
+    const fileInput = document.getElementById('fileInput');
 
-        cards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                // Aquí podrías añadir lógica extra si quisieras
-                console.log('Explorando categoría: ' + card.querySelector('h2').innerText);
-            });
-        });
+    // Abrir modal
+    openBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        modal.style.display = 'flex';
+        resetModal();
+    });
 
-        // Nota para el futuro:
-        // Cuando quieras conectar la API real, borraremos estos enlaces estáticos
-        // y usaremos JavaScript para generar estas tarjetas leyendo tu carpeta principal.
-    </script>
+    // Cerrar modal
+    closeBtn.addEventListener('click', () => { 
+        modal.style.display = 'none'; 
+    });
+
+    // Cerrar al hacer click fuera
+    modal.addEventListener('click', (e) => { 
+        if (e.target === modal) {
+            modal.style.display = 'none'; 
+        }
+    });
+
+    // Verificar código
+    verifyBtn.addEventListener('click', () => {
+        const code = accessCode.value.trim();
+        if (code === '12398755') {
+            errorMsg.style.display = 'none';
+            stepCode.classList.remove('active');
+            stepUpload.classList.add('active');
+        } else {
+            errorMsg.style.display = 'block';
+            accessCode.value = '';
+            accessCode.focus();
+            accessCode.style.borderColor = '#ff6b6b';
+            setTimeout(() => accessCode.style.borderColor = '', 300);
+        }
+    });
+
+    // Enter para verificar
+    accessCode.addEventListener('keypress', (e) => { 
+        if (e.key === 'Enter') verifyBtn.click(); 
+    });
+
+    // Confirmar subida - VERSIÓN MEJORADA
+    confirmUpload.addEventListener('click', async () => {
+        const folder = folderSelect.value;
+        const file = fileInput.files[0];
+        
+        if (!folder) { 
+            alert('⚠️ Selecciona una carpeta'); 
+            return; 
+        }
+        if (!file) { 
+            alert('⚠️ Selecciona un archivo'); 
+            return; 
+        }
+
+        console.log('📤 Iniciando subida...');
+        confirmUpload.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
+        confirmUpload.disabled = true;
+
+        try {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const base64 = e.target.result.split(',')[1];
+                
+                // Crear formulario oculto
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = SCRIPT_URL;
+                form.target = 'hidden-iframe';
+                form.style.display = 'none';
+                
+                const inputData = document.createElement('input');
+                inputData.type = 'hidden';
+                inputData.name = 'folder';
+                inputData.value = folder;
+                
+                const inputFileName = document.createElement('input');
+                inputFileName.type = 'hidden';
+                inputFileName.name = 'fileName';
+                inputFileName.value = file.name;
+                
+                const inputMimeType = document.createElement('input');
+                inputMimeType.type = 'hidden';
+                inputMimeType.name = 'mimeType';
+                inputMimeType.value = file.type || 'application/octet-stream';
+                
+                const inputFileData = document.createElement('input');
+                inputFileData.type = 'hidden';
+                inputFileData.name = 'fileData';
+                inputFileData.value = base64;
+                
+                form.appendChild(inputData);
+                form.appendChild(inputFileName);
+                form.appendChild(inputMimeType);
+                form.appendChild(inputFileData);
+                
+                // Crear iframe
+                const iframe = document.createElement('iframe');
+                iframe.name = 'hidden-iframe';
+                iframe.style.display = 'none';
+                
+                // Variable para controlar si ya se procesó
+                let submitted = false;
+                
+                iframe.onload = () => {
+                    if (submitted) return;
+                    submitted = true;
+                    
+                    console.log('✅ Subida completada');
+                    
+                    // Esperar un momento para asegurar que Google procesó
+                    setTimeout(() => {
+                        // Mostrar alerta
+                        alert('✅ ¡Archivo subido correctamente!\n\n📁 Revisa tu Google Drive');
+                        
+                        // Cerrar modal
+                        modal.style.display = 'none';
+                        
+                        // Resetear botón
+                        confirmUpload.innerHTML = '<i class="fas fa-upload"></i> Confirmar subida';
+                        confirmUpload.disabled = false;
+                        
+                        // Resetear formulario
+                        resetModal();
+                        
+                        // Limpiar iframe después de un momento
+                        setTimeout(() => {
+                            if (iframe && iframe.parentNode) {
+                                try {
+                                    document.body.removeChild(iframe);
+                                } catch(e) {
+                                    console.log('Iframe ya eliminado');
+                                }
+                            }
+                            if (form && form.parentNode) {
+                                try {
+                                    document.body.removeChild(form);
+                                } catch(e) {
+                                    console.log('Form ya eliminado');
+                                }
+                            }
+                        }, 1000);
+                        
+                    }, 1000); // Esperar 1 segundo después del onload
+                };
+                
+                // Manejar error de iframe
+                iframe.onerror = () => {
+                    if (submitted) return;
+                    submitted = true;
+                    
+                    alert('❌ Error al subir el archivo');
+                    confirmUpload.innerHTML = '<i class="fas fa-upload"></i> Confirmar subida';
+                    confirmUpload.disabled = false;
+                    
+                    if (iframe && iframe.parentNode) {
+                        document.body.removeChild(iframe);
+                    }
+                    if (form && form.parentNode) {
+                        document.body.removeChild(form);
+                    }
+                };
+                
+                // Añadir al DOM y submit
+                document.body.appendChild(iframe);
+                document.body.appendChild(form);
+                
+                // Pequeña pausa antes de submit
+                setTimeout(() => {
+                    form.submit();
+                }, 100);
+                
+            };
+            
+            reader.onerror = () => {
+                alert('❌ Error al leer el archivo');
+                confirmUpload.innerHTML = '<i class="fas fa-upload"></i> Confirmar subida';
+                confirmUpload.disabled = false;
+            };
+            
+            reader.readAsDataURL(file);
+            
+        } catch (error) {
+            console.error('❌ Error:', error);
+            alert('❌ Error: ' + error.message);
+            confirmUpload.innerHTML = '<i class="fas fa-upload"></i> Confirmar subida';
+            confirmUpload.disabled = false;
+        }
+    });
+
+    // Resetear modal
+    function resetModal() {
+        stepCode.classList.add('active');
+        stepUpload.classList.remove('active');
+        accessCode.value = '';
+        folderSelect.value = '';
+        fileInput.value = '';
+        errorMsg.style.display = 'none';
+    }
+</script>
 </body>
 </html>
