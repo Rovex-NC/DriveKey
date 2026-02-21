@@ -310,6 +310,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @media (max-width: 768px) {
             nav { flex-direction: column; gap: 1rem; padding: 1rem; }
             .nav-links { gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
@@ -326,7 +331,8 @@
             <i class="fas fa-key"></i> DriveKey
         </div>
         <ul class="nav-links">
-            <li><a href="nada.html">Nada</a></li>
+            <!-- ✅ ROVEX - Navbar original (sin clase nav-upload) -->
+            <li><a href="#" id="rovex-link" data-target="Drives/Rovex.html">Rovex</a></li>
             <li><a href="#" class="nav-upload" id="openUpload"><i class="fas fa-cloud-upload-alt"></i> Subir archivos</a></li>
         </ul>
     </nav>
@@ -404,6 +410,21 @@
         </div>
     </div>
 
+    <!-- === 🔐 MODAL DE CONTRASEÑA ROVEX === -->
+    <div class="modal-overlay" id="rovexModal">
+        <div class="modal">
+            <button class="close-btn" id="closeRovexModal">&times;</button>
+            
+            <div class="upload-step active">
+                <h3><i class="fas fa-shield-alt"></i> Acceso a Rovex</h3>
+                <p style="text-align:center; margin-bottom:1rem; opacity:0.9;">Esta área está protegida</p>
+                <input type="password" id="rovexPassword" placeholder="Ingresa tu contraseña" maxlength="10">
+                <p class="error" id="rovexError"><i class="fas fa-exclamation-triangle"></i> Contraseña incorrecta</p>
+                <button id="verifyRovex">Acceder</button>
+            </div>
+        </div>
+    </div>
+
 <script>
     // ============================================
     // ⚠️ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT ⚠️
@@ -416,6 +437,7 @@
         'emuladores': '1OMG15Q-0wZWEE3tnaQ0renZ_Atrp2Pyr'
     };
 
+    // === MODAL DE SUBIDA ===
     const modal = document.getElementById('uploadModal');
     const openBtn = document.getElementById('openUpload');
     const closeBtn = document.getElementById('closeModal');
@@ -428,26 +450,38 @@
     const folderSelect = document.getElementById('folderSelect');
     const fileInput = document.getElementById('fileInput');
 
-    // Abrir modal
+    // === MODAL DE ROVEX ===
+    const rovexModal = document.getElementById('rovexModal');
+    const rovexLink = document.getElementById('rovex-link');
+    const closeRovexBtn = document.getElementById('closeRovexModal');
+    const rovexPassword = document.getElementById('rovexPassword');
+    const rovexError = document.getElementById('rovexError');
+    const verifyRovexBtn = document.getElementById('verifyRovex');
+
+    // ==========================================
+    // FUNCIONES MODAL DE SUBIDA
+    // ==========================================
+
+    // Abrir modal de subida
     openBtn.addEventListener('click', (e) => {
         e.preventDefault();
         modal.style.display = 'flex';
         resetModal();
     });
 
-    // Cerrar modal
+    // Cerrar modal de subida
     closeBtn.addEventListener('click', () => { 
         modal.style.display = 'none'; 
     });
 
-    // Cerrar al hacer click fuera
+    // Cerrar modal de subida al hacer click fuera
     modal.addEventListener('click', (e) => { 
         if (e.target === modal) {
             modal.style.display = 'none'; 
         }
     });
 
-    // Verificar código
+    // Verificar código de subida
     verifyBtn.addEventListener('click', () => {
         const code = accessCode.value.trim();
         if (code === '12398755') {
@@ -463,12 +497,12 @@
         }
     });
 
-    // Enter para verificar
+    // Enter para verificar código de subida
     accessCode.addEventListener('keypress', (e) => { 
         if (e.key === 'Enter') verifyBtn.click(); 
     });
 
-    // Confirmar subida - VERSIÓN MEJORADA
+    // Confirmar subida
     confirmUpload.addEventListener('click', async () => {
         const folder = folderSelect.value;
         const file = fileInput.files[0];
@@ -491,7 +525,6 @@
             reader.onload = async (e) => {
                 const base64 = e.target.result.split(',')[1];
                 
-                // Crear formulario oculto
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = SCRIPT_URL;
@@ -523,12 +556,10 @@
                 form.appendChild(inputMimeType);
                 form.appendChild(inputFileData);
                 
-                // Crear iframe
                 const iframe = document.createElement('iframe');
                 iframe.name = 'hidden-iframe';
                 iframe.style.display = 'none';
                 
-                // Variable para controlar si ya se procesó
                 let submitted = false;
                 
                 iframe.onload = () => {
@@ -537,43 +568,25 @@
                     
                     console.log('✅ Subida completada');
                     
-                    // Esperar un momento para asegurar que Google procesó
                     setTimeout(() => {
-                        // Mostrar alerta
                         alert('✅ ¡Archivo subido correctamente!\n\n📁 Revisa tu Google Drive');
-                        
-                        // Cerrar modal
                         modal.style.display = 'none';
-                        
-                        // Resetear botón
                         confirmUpload.innerHTML = '<i class="fas fa-upload"></i> Confirmar subida';
                         confirmUpload.disabled = false;
-                        
-                        // Resetear formulario
                         resetModal();
                         
-                        // Limpiar iframe después de un momento
                         setTimeout(() => {
                             if (iframe && iframe.parentNode) {
-                                try {
-                                    document.body.removeChild(iframe);
-                                } catch(e) {
-                                    console.log('Iframe ya eliminado');
-                                }
+                                try { document.body.removeChild(iframe); } catch(e) {}
                             }
                             if (form && form.parentNode) {
-                                try {
-                                    document.body.removeChild(form);
-                                } catch(e) {
-                                    console.log('Form ya eliminado');
-                                }
+                                try { document.body.removeChild(form); } catch(e) {}
                             }
                         }, 1000);
                         
-                    }, 1000); // Esperar 1 segundo después del onload
+                    }, 1000);
                 };
                 
-                // Manejar error de iframe
                 iframe.onerror = () => {
                     if (submitted) return;
                     submitted = true;
@@ -582,22 +595,14 @@
                     confirmUpload.innerHTML = '<i class="fas fa-upload"></i> Confirmar subida';
                     confirmUpload.disabled = false;
                     
-                    if (iframe && iframe.parentNode) {
-                        document.body.removeChild(iframe);
-                    }
-                    if (form && form.parentNode) {
-                        document.body.removeChild(form);
-                    }
+                    if (iframe && iframe.parentNode) { document.body.removeChild(iframe); }
+                    if (form && form.parentNode) { document.body.removeChild(form); }
                 };
                 
-                // Añadir al DOM y submit
                 document.body.appendChild(iframe);
                 document.body.appendChild(form);
                 
-                // Pequeña pausa antes de submit
-                setTimeout(() => {
-                    form.submit();
-                }, 100);
+                setTimeout(() => { form.submit(); }, 100);
                 
             };
             
@@ -617,7 +622,7 @@
         }
     });
 
-    // Resetear modal
+    // Resetear modal de subida
     function resetModal() {
         stepCode.classList.add('active');
         stepUpload.classList.remove('active');
@@ -626,6 +631,59 @@
         fileInput.value = '';
         errorMsg.style.display = 'none';
     }
+
+    // ==========================================
+    // 🔐 FUNCIONES MODAL DE ROVEX
+    // ==========================================
+
+    // Abrir modal de Rovex
+    rovexLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        rovexModal.style.display = 'flex';
+        rovexPassword.value = '';
+        rovexError.style.display = 'none';
+        rovexPassword.focus();
+    });
+
+    // Cerrar modal de Rovex
+    closeRovexBtn.addEventListener('click', () => { 
+        rovexModal.style.display = 'none'; 
+    });
+
+    // Cerrar modal de Rovex al hacer click fuera
+    rovexModal.addEventListener('click', (e) => { 
+        if (e.target === rovexModal) {
+            rovexModal.style.display = 'none'; 
+        }
+    });
+
+    // Verificar contraseña de Rovex
+    verifyRovexBtn.addEventListener('click', () => {
+        const password = rovexPassword.value.trim();
+        
+        if (password === '211018') {
+            // ✅ Contraseña correcta
+            rovexError.style.display = 'none';
+            rovexModal.style.display = 'none';
+            
+            // Redirigir a la página de destino
+            const targetPage = rovexLink.dataset.target;
+            window.location.href = targetPage;
+        } else {
+            // ❌ Contraseña incorrecta
+            rovexError.style.display = 'block';
+            rovexPassword.value = '';
+            rovexPassword.focus();
+            rovexPassword.style.borderColor = '#ff6b6b';
+            setTimeout(() => rovexPassword.style.borderColor = '', 300);
+        }
+    });
+
+    // Enter para verificar contraseña de Rovex
+    rovexPassword.addEventListener('keypress', (e) => { 
+        if (e.key === 'Enter') verifyRovexBtn.click(); 
+    });
+
 </script>
 </body>
 </html>
