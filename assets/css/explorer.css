@@ -157,3 +157,35 @@ dialog.preview:not([open]) { display: none; }
 }
 .mobile-cats { display: none; margin-top: 16px; }
 @media (max-width: 760px) { .mobile-cats { display: flex; } }
+
+/* ============ MODO ADMINISTRADOR (Rovex) ============ */
+.admin-toggle.active { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+
+.admin-bar {
+    display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap;
+    padding: 10px 14px; margin-bottom: 14px; border-radius: 12px;
+    background: rgba(124, 58, 237, .1); border: 1px solid rgba(167, 139, 250, .35);
+    font-size: .9rem;
+}
+.admin-badge { font-weight: 600; color: #c4b5fd; white-space: nowrap; }
+.admin-hint { color: var(--text-2); flex: 1; min-width: 200px; }
+.admin-actions { display: none; align-items: center; gap: 8px; margin-left: auto; }
+.admin-bar.has-selection .admin-actions { display: flex; }
+.admin-bar.has-selection .admin-hint { display: none; }
+.admin-actions > span { color: var(--text); font-weight: 600; margin-right: 4px; }
+
+.file-check {
+    position: absolute; top: 20px; left: 20px; z-index: 2;
+    width: 20px; height: 20px; cursor: pointer; accent-color: #dc2626;
+}
+.files.list .file-check { position: static; flex-shrink: 0; }
+.file.selected { border-color: #dc2626; background: color-mix(in srgb, #dc2626 10%, var(--surface-2)); }
+.icon-btn.danger:hover { background: #dc2626; border-color: #dc2626; color: #fff; }
+
+.del-list { list-style: none; max-height: 260px; overflow: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.del-list li { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; background: var(--bg); border: 1px solid var(--border); font-size: .92rem; }
+.del-list li i { color: var(--tc); }
+.del-list li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.del-list li.more { color: var(--text-3); justify-content: center; }
+.del-warn { color: #fbbf24; font-size: .9rem; margin-bottom: 14px; }
+.del-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }

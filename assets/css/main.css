@@ -54,6 +54,8 @@ body::before {
     pointer-events: none;
 }
 
+[hidden] { display: none !important; }
+
 a { color: inherit; }
 button { font: inherit; color: inherit; }
 img { max-width: 100%; display: block; }
@@ -122,6 +124,9 @@ img { max-width: 100%; display: block; }
 .btn-ghost { background: var(--surface-2); border-color: var(--border); color: var(--text); }
 .btn-ghost:hover:not(:disabled) { background: var(--surface-3); border-color: var(--border-strong); }
 .btn-block { width: 100%; }
+.btn-sm { padding: 7px 14px; font-size: .88rem; }
+.btn-danger { background: #dc2626; color: #fff; box-shadow: 0 6px 20px rgba(220, 38, 38, .3); }
+.btn-danger:hover:not(:disabled) { background: #ef4444; }
 
 .icon-btn {
     width: 40px; height: 40px; flex-shrink: 0;

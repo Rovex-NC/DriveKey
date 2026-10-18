@@ -10,6 +10,11 @@ window.DRIVEKEY = {
     // Google Apps Script que recibe las subidas.
     SCRIPT_URL: 'https://script.google.com/macros/s/AKfycby18K8YRQKZUBvzdUdUwvl-09md8gElORIGQjVOH0fb8KubIC28FP4vWZBFfBP53hj7WA/exec',
 
+    // Google Apps Script de administración (borrar archivos desde Rovex).
+    // Es un proyecto aparte del de subidas: código en apps-script/DriveKeyAdmin.gs.
+    // Pega aquí la URL de su despliegue (termina en /exec). Vacío = modo admin desactivado.
+    ADMIN_URL: '',
+
     // Códigos guardados como hash SHA-256 (ya no se ven en texto plano en el código fuente).
     // Para cambiar uno: calcula el SHA-256 del nuevo código y pégalo aquí.
     UPLOAD_CODE_HASH: '61c3268ae4de3061999c69bb3033bf49fb6de96d4485a33fbc502e4dae0d85b9',
