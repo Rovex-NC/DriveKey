@@ -3,687 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DriveKey - Mods & ROMs</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 100%);
-            min-height: 100vh;
-            padding-top: 80px;
-            color: white;
-        }
-
-        /* === NAVBAR === */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 5%;
-            background: rgba(20, 20, 40, 0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .nav-logo {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #4facfe;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 1rem;
-            position: relative;
-            padding: 0.5rem 0;
-            transition: color 0.3s ease;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #00f2fe, #4facfe);
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-            border-radius: 2px;
-        }
-
-        .nav-links a:hover::after { width: 100%; }
-        .nav-links a:hover {
-            color: #4facfe;
-            text-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
-        }
-
-        .nav-upload {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 0.6rem 1.4rem;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .nav-upload:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-        }
-
-        .nav-upload::after { background: white !important; }
-
-        /* === CONTENIDO === */
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        header { text-align: center; margin-bottom: 50px; }
-        header h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            letter-spacing: 1px;
-        }
-        header p { font-size: 1.2rem; opacity: 0.9; font-weight: 300; }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px 30px;
-            text-align: center;
-            text-decoration: none;
-            color: #333;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 6px;
-            background: linear-gradient(90deg, #ff416c, #ff4b2b);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-            transform-origin: left;
-        }
-        .card:hover::before { transform: scaleX(1); }
-        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-
-        .card-icon {
-            width: 90px; height: 90px; margin: 0 auto 25px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2.5rem; color: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .card.nintendo .card-icon { background: linear-gradient(135deg, #e60012, #ffcb05); }
-        .card.playstation .card-icon { background: linear-gradient(135deg, #003791, #0070d1); }
-        .card.minecraft .card-icon { background: linear-gradient(135deg, #4caf50, #8bc34a); }
-        .card.gta .card-icon { background: linear-gradient(135deg, #11998e, #38ef7d); }
-        .card.retro .card-icon { background: linear-gradient(135deg, #8e2de2, #4a00e0); }
-        .card.tools .card-icon { background: linear-gradient(135deg, #607d8b, #cfd8dc); }
-
-        .card h2 { font-size: 1.6rem; margin-bottom: 12px; color: #2d3748; font-weight: 700; }
-        .card p { color: #718096; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; }
-        .card-arrow {
-            font-size: 1.5rem; color: #b21f1f; opacity: 0;
-            transition: opacity 0.3s ease; align-self: center; margin-top: auto;
-        }
-        .card:hover .card-arrow { opacity: 1; }
-
-        footer {
-            text-align: center; color: white; padding: 40px 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            width: 100%; backdrop-filter: blur(10px); margin-top: auto;
-        }
-        footer p { opacity: 0.8; font-size: 0.9rem; max-width: 1200px; margin: 0 auto; }
-
-        /* === MODAL MEJORADO === */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 2.5rem;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            animation: slideUp 0.4s ease;
-            position: relative;
-        }
-
-        .modal h3 {
-            margin-bottom: 1.5rem;
-            text-align: center;
-            color: white;
-            font-size: 1.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .modal label {
-            color: white;
-            font-weight: 600;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-        }
-
-        .modal input, .modal select {
-            width: 100%;
-            padding: 12px 15px;
-            margin-bottom: 1rem;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            background: white;
-            color: #2d3748;
-            font-size: 1rem;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-
-        .modal input:focus, .modal select:focus {
-            outline: none;
-            border-color: #4facfe;
-            box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
-            background: #f7fafc;
-        }
-
-        .modal select option {
-            color: #2d3748;
-            background: white;
-            padding: 10px;
-        }
-
-        .modal small {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .modal button {
-            width: 100%;
-            padding: 14px;
-            background: white;
-            color: #667eea;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal button:hover {
-            background: #2d3748;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .modal .error {
-            color: #ff6b6b;
-            text-align: center;
-            margin-bottom: 1rem;
-            font-weight: 600;
-            display: none;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        .modal .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal .close-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
-            transform: rotate(90deg);
-        }
-       
-        .upload-step { display: none; }
-        .upload-step.active { display: block; animation: fadeIn 0.3s; }
-
-        .fade-in {
-            animation: fadeIn 0.8s ease forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        @keyframes fadeIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 768px) {
-            nav { flex-direction: column; gap: 1rem; padding: 1rem; }
-            .nav-links { gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
-            header h1 { font-size: 2.2rem; }
-            .cards-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+    <title>DriveKey · ROMs Pokémon, Mods y Emuladores</title>
+    <meta name="description" content="DriveKey: ROMs de Pokémon, packs de mods de Minecraft y emuladores, todo alojado en Google Drive y listo para descargar.">
+    <meta name="theme-color" content="#0b0d17">
+    <meta property="og:title" content="DriveKey">
+    <meta property="og:description" content="¿Quieres emular Pokémon o unos buenos packs de mods? Estás donde tienes que estar.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/home.css">
 </head>
 <body>
 
-    <!-- === NAVBAR === -->
-    <nav>
-        <div class="nav-logo">
-            <i class="fas fa-key"></i> DriveKey
+    <nav class="nav">
+        <div class="container">
+            <a href="./" class="logo"><span class="logo-mark"><i class="fa-solid fa-key"></i></span> DriveKey</a>
+            <ul class="nav-links">
+                <li><a href="#empezar" class="nav-link"><i class="fa-solid fa-circle-question"></i><span class="label">Cómo empezar</span></a></li>
+                <li><button type="button" class="nav-link" id="openRovex"><i class="fa-solid fa-lock"></i><span class="label">Rovex</span></button></li>
+                <li><button type="button" class="btn btn-primary" id="openUpload"><i class="fa-solid fa-cloud-arrow-up"></i><span class="label">Subir archivos</span></button></li>
+            </ul>
         </div>
-        <ul class="nav-links">
-            <!-- ✅ ROVEX - Navbar original (sin clase nav-upload) -->
-            <li><a href="#" id="rovex-link" data-target="Drives/Rovex.html">Rovex</a></li>
-            <li><a href="#" class="nav-upload" id="openUpload"><i class="fas fa-cloud-upload-alt"></i> Subir archivos</a></li>
-        </ul>
     </nav>
 
-    <!-- === CONTENIDO === -->
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-gamepad"></i> DriveKey</h1>
-            <p>Tu biblioteca de Mods, ROMs y Clásicos</p>
-        </header>
+    <main>
+        <section class="hero container">
+            <span class="eyebrow fade-up"><span class="pulse"></span> Biblioteca en Google Drive</span>
+            <h1 class="fade-up" style="animation-delay:.05s">¿Quieres emular <span class="grad">Pokémon</span> o unos buenos <span class="grad">packs de mods</span>?</h1>
+            <p class="hero-sub fade-up" style="animation-delay:.1s">Estás donde tienes que estar. ROMs, mods de Minecraft y los emuladores para usarlos, todo en un sitio y sin registros.</p>
+            <div class="hero-cta fade-up" style="animation-delay:.15s">
+                <a href="Drives/PokemonROMS.html" class="btn btn-primary"><i class="fa-solid fa-gamepad"></i> Ver ROMs Pokémon</a>
+                <a href="#empezar" class="btn btn-ghost"><i class="fa-solid fa-route"></i> Cómo empezar</a>
+            </div>
+        </section>
 
-        <div class="cards-grid">
-            <a href="Drives/Minecraftmods.html" target="_blank" class="card minecraft fade-in" style="animation-delay: 0.3s;">
-                <div class="card-icon"><i class="fas fa-cube"></i></div>
-                <h2>Minecraft Mods</h2>
-                <p>Packs de texturas, mods de Forge/Fabric y mapas personalizados.</p>
-                <i class="fas fa-arrow-right card-arrow"></i>
-            </a>
-            
-            <a href="Drives/PokemonROMS.html" target="_blank" class="card nintendo fade-in" style="animation-delay: 0.1s;">
-                <div class="card-icon"><i class="fas fa-gamepad"></i></div>
-                <h2>Consolas Clásicas</h2>
-                <p>ROMs de NES, SNES, N64 y GameBoy. Juegos listos para emular.</p>
-                <i class="fas fa-arrow-right card-arrow"></i>
-            </a>
+        <section class="container" aria-labelledby="catTitle">
+            <h2 id="catTitle" class="section-title">Explora la biblioteca</h2>
+            <div class="cards" id="categoryCards">
+                <!-- Se rellena desde assets/js/home.js con los datos de config.js -->
+            </div>
+        </section>
 
-            <a href="Drives/Emuladores.html" target="_blank" class="card tools fade-in" style="animation-delay: 0.6s;">
-                <div class="card-icon"><i class="fas fa-tools"></i></div>
-                <h2>Herramientas</h2>
-                <p>Emuladores, descompresores y software necesario para usar los archivos.</p>
-                <i class="fas fa-arrow-right card-arrow"></i>
-            </a>
+        <section class="container steps-wrap" id="empezar" aria-labelledby="stepsTitle">
+            <h2 id="stepsTitle" class="section-title">Cómo empezar en 3 pasos</h2>
+            <ol class="steps">
+                <li class="step">
+                    <span class="step-num">1</span>
+                    <h3>Descarga un emulador</h3>
+                    <p>Para ROMs de DS (<code>.nds</code>) usa <strong>melonDS</strong>; para GBA (<code>.gba</code>), <strong>mGBA</strong>. Los tienes en <a href="Drives/Emuladores.html">Emuladores</a>.</p>
+                </li>
+                <li class="step">
+                    <span class="step-num">2</span>
+                    <h3>Elige tu juego o mod</h3>
+                    <p>Entra en una categoría, busca por nombre y pulsa <i class="fa-solid fa-download"></i> para descargar. Si es un <code>.zip</code>, descomprímelo primero.</p>
+                </li>
+                <li class="step">
+                    <span class="step-num">3</span>
+                    <h3>Ábrelo y a jugar</h3>
+                    <p>Abre la ROM desde el emulador (<em>Archivo → Abrir</em>). Los mods de Minecraft van en la carpeta <code>mods</code> de tu instancia.</p>
+                </li>
+            </ol>
+            <p class="steps-note"><i class="fa-solid fa-circle-info"></i> Los archivos de más de 100 MB pueden mostrar un aviso de Google ("no se puede analizar en busca de virus"). Es normal: pulsa <em>Descargar de todos modos</em>.</p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <span>&copy; <span id="year">2026</span> DriveKey Project · por <a href="https://rovex-nc.github.io/" target="_blank" rel="noopener">Rovex</a></span>
+            <span><i class="fa-brands fa-google-drive"></i> Archivos alojados en Google Drive</span>
         </div>
-
-        <footer>
-            <p>&copy; 2026 DriveKey Project</p>
-            <p style="margin-top: 10px;">
-                <i class="fas fa-info-circle"></i> Todos los archivos alojados en Google Drive seguro.
-            </p>
-        </footer>
-    </div>
+    </footer>
 
     <!-- === MODAL DE SUBIDA === -->
-    <div class="modal-overlay" id="uploadModal">
-        <div class="modal">
-            <button class="close-btn" id="closeModal">&times;</button>
-            
-            <!-- Paso 1: Código -->
-            <div class="upload-step active" id="stepCode">
-                <h3><i class="fas fa-lock"></i> Acceso de subida</h3>
-                <p style="text-align:center; margin-bottom:1rem; opacity:0.9;">Introduce el código de seguridad</p>
-                <input type="password" id="accessCode" placeholder="Código de acceso" maxlength="8">
-                <p class="error" id="errorMsg"><i class="fas fa-exclamation-triangle"></i> Código incorrecto</p>
-                <button id="verifyCode">Verificar</button>
+    <dialog class="modal" id="uploadModal" aria-labelledby="uploadTitle">
+        <!-- Paso 1: código -->
+        <form class="upload-step" id="stepCode" method="dialog" novalidate>
+            <div class="modal-head">
+                <div>
+                    <h3 class="modal-title" id="uploadTitle"><i class="fa-solid fa-lock"></i> Acceso de subida</h3>
+                    <p class="modal-sub">Introduce el código de seguridad para continuar.</p>
+                </div>
+                <button type="button" class="icon-btn" data-close aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <label class="field">
+                <span class="sr-only">Código de acceso</span>
+                <input type="password" class="input" id="accessCode" placeholder="Código de acceso" maxlength="8" inputmode="numeric" autocomplete="off">
+            </label>
+            <p class="form-error" id="codeError" hidden><i class="fa-solid fa-triangle-exclamation"></i> Código incorrecto</p>
+            <button type="submit" class="btn btn-primary btn-block">Verificar</button>
+        </form>
+
+        <!-- Paso 2: subida -->
+        <form class="upload-step" id="stepUpload" hidden novalidate>
+            <div class="modal-head">
+                <div>
+                    <h3 class="modal-title"><i class="fa-solid fa-folder-plus"></i> Subir contenido</h3>
+                    <p class="modal-sub">El archivo se guardará en la carpeta de Drive elegida.</p>
+                </div>
+                <button type="button" class="icon-btn" data-close aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <!-- Paso 2: Subida -->
-            <div class="upload-step" id="stepUpload">
-                <h3><i class="fas fa-folder-plus"></i> Subir contenido</h3>
-                
-                <label style="display:block; margin-bottom:0.5rem; font-weight:500;">📁 Carpeta de destino:</label>
-                <select id="folderSelect">
-                    <option value="">-- Selecciona una carpeta --</option>
-                    <option value="minecraft"> Minecraft Mods</option>
-                    <option value="Pokemon"> Juegos Pokemon </option>
-                    <option value="emuladores"> Emuladores </option>
+            <label class="field">
+                <span class="field-label">Carpeta de destino</span>
+                <select class="select" id="folderSelect" required>
+                    <option value="">Selecciona una carpeta…</option>
                 </select>
+            </label>
 
-                <label style="display:block; margin:1rem 0 0.5rem; font-weight:500;">📄 Archivo:</label>
-                <input type="file" id="fileInput">
-                <small style="display:block; margin-bottom:1rem; opacity:0.7;">* Selecciona el archivo a subir</small>
+            <div class="field">
+                <span class="field-label">Archivo</span>
+                <label class="dropzone" id="dropzone">
+                    <input type="file" id="fileInput" class="sr-only">
+                    <i class="fa-solid fa-cloud-arrow-up dz-icon"></i>
+                    <span class="dz-text"><strong>Arrastra un archivo aquí</strong> o haz clic para elegirlo</span>
+                    <span class="dz-file" id="fileInfo" hidden></span>
+                </label>
+            </div>
+            <p class="form-error" id="uploadError" hidden></p>
+            <p class="upload-warn" id="sizeWarn" hidden><i class="fa-solid fa-triangle-exclamation"></i> <span></span></p>
 
-                <button id="confirmUpload"><i class="fas fa-upload"></i> Confirmar subida</button>
+            <button type="submit" class="btn btn-primary btn-block" id="confirmUpload"><i class="fa-solid fa-upload"></i> Confirmar subida</button>
+        </form>
+
+        <!-- Paso 3: hecho -->
+        <div class="upload-step upload-done" id="stepDone" hidden>
+            <div class="done-icon"><i class="fa-solid fa-check"></i></div>
+            <h3 class="modal-title">¡Archivo enviado!</h3>
+            <p class="modal-sub" id="doneText">Revisa tu Google Drive.</p>
+            <div class="done-actions">
+                <button type="button" class="btn btn-ghost" id="uploadAnother"><i class="fa-solid fa-plus"></i> Subir otro</button>
+                <button type="button" class="btn btn-primary" data-close>Cerrar</button>
             </div>
         </div>
-    </div>
+    </dialog>
 
-    <!-- === 🔐 MODAL DE CONTRASEÑA ROVEX === -->
-    <div class="modal-overlay" id="rovexModal">
-        <div class="modal">
-            <button class="close-btn" id="closeRovexModal">&times;</button>
-            
-            <div class="upload-step active">
-                <h3><i class="fas fa-shield-alt"></i> Acceso a Rovex</h3>
-                <p style="text-align:center; margin-bottom:1rem; opacity:0.9;">Esta área está protegida</p>
-                <input type="password" id="rovexPassword" placeholder="Ingresa tu contraseña" maxlength="10">
-                <p class="error" id="rovexError"><i class="fas fa-exclamation-triangle"></i> Contraseña incorrecta</p>
-                <button id="verifyRovex">Acceder</button>
+    <!-- === MODAL ROVEX === -->
+    <dialog class="modal" id="rovexModal" aria-labelledby="rovexTitle" style="--accent:#a78bfa">
+        <form method="dialog" id="rovexForm" novalidate>
+            <div class="modal-head">
+                <div>
+                    <h3 class="modal-title" id="rovexTitle"><i class="fa-solid fa-shield-halved"></i> Acceso a Rovex</h3>
+                    <p class="modal-sub">Esta área está protegida.</p>
+                </div>
+                <button type="button" class="icon-btn" data-close aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
             </div>
-        </div>
-    </div>
+            <label class="field">
+                <span class="sr-only">Contraseña</span>
+                <input type="password" class="input" id="rovexPassword" placeholder="Contraseña" maxlength="10" autocomplete="off">
+            </label>
+            <p class="form-error" id="rovexError" hidden><i class="fa-solid fa-triangle-exclamation"></i> Contraseña incorrecta</p>
+            <button type="submit" class="btn btn-primary btn-block">Acceder</button>
+        </form>
+    </dialog>
 
-<script>
-    // ============================================
-    // ⚠️ PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT ⚠️
-    // ============================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby18K8YRQKZUBvzdUdUwvl-09md8gElORIGQjVOH0fb8KubIC28FP4vWZBFfBP53hj7WA/exec';
-    
-    const FOLDER_IDS = {
-        'minecraft': '1osB40eDY9Kjz50H6BII2vjsEIufPo6d-',
-        'Pokemon': '1yfYEp-k3k0OpLcewOFSoP3MryzsD5YRH',
-        'emuladores': '1OMG15Q-0wZWEE3tnaQ0renZ_Atrp2Pyr'
-    };
-
-    // === MODAL DE SUBIDA ===
-    const modal = document.getElementById('uploadModal');
-    const openBtn = document.getElementById('openUpload');
-    const closeBtn = document.getElementById('closeModal');
-    const verifyBtn = document.getElementById('verifyCode');
-    const accessCode = document.getElementById('accessCode');
-    const errorMsg = document.getElementById('errorMsg');
-    const stepCode = document.getElementById('stepCode');
-    const stepUpload = document.getElementById('stepUpload');
-    const confirmUpload = document.getElementById('confirmUpload');
-    const folderSelect = document.getElementById('folderSelect');
-    const fileInput = document.getElementById('fileInput');
-
-    // === MODAL DE ROVEX ===
-    const rovexModal = document.getElementById('rovexModal');
-    const rovexLink = document.getElementById('rovex-link');
-    const closeRovexBtn = document.getElementById('closeRovexModal');
-    const rovexPassword = document.getElementById('rovexPassword');
-    const rovexError = document.getElementById('rovexError');
-    const verifyRovexBtn = document.getElementById('verifyRovex');
-
-    // ==========================================
-    // FUNCIONES MODAL DE SUBIDA
-    // ==========================================
-
-    // Abrir modal de subida
-    openBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        modal.style.display = 'flex';
-        resetModal();
-    });
-
-    // Cerrar modal de subida
-    closeBtn.addEventListener('click', () => { 
-        modal.style.display = 'none'; 
-    });
-
-    // Cerrar modal de subida al hacer click fuera
-    modal.addEventListener('click', (e) => { 
-        if (e.target === modal) {
-            modal.style.display = 'none'; 
-        }
-    });
-
-    // Verificar código de subida
-    verifyBtn.addEventListener('click', () => {
-        const code = accessCode.value.trim();
-        if (code === '12398755') {
-            errorMsg.style.display = 'none';
-            stepCode.classList.remove('active');
-            stepUpload.classList.add('active');
-        } else {
-            errorMsg.style.display = 'block';
-            accessCode.value = '';
-            accessCode.focus();
-            accessCode.style.borderColor = '#ff6b6b';
-            setTimeout(() => accessCode.style.borderColor = '', 300);
-        }
-    });
-
-    // Enter para verificar código de subida
-    accessCode.addEventListener('keypress', (e) => { 
-        if (e.key === 'Enter') verifyBtn.click(); 
-    });
-
-    // Confirmar subida
-    confirmUpload.addEventListener('click', async () => {
-        const folder = folderSelect.value;
-        const file = fileInput.files[0];
-        
-        if (!folder) { 
-            alert('⚠️ Selecciona una carpeta'); 
-            return; 
-        }
-        if (!file) { 
-            alert('⚠️ Selecciona un archivo'); 
-            return; 
-        }
-
-        console.log('📤 Iniciando subida...');
-        confirmUpload.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subiendo...';
-        confirmUpload.disabled = true;
-
-        try {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const base64 = e.target.result.split(',')[1];
-                
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = SCRIPT_URL;
-                form.target = 'hidden-iframe';
-                form.style.display = 'none';
-                
-                const inputData = document.createElement('input');
-                inputData.type = 'hidden';
-                inputData.name = 'folder';
-                inputData.value = folder;
-                
-                const inputFileName = document.createElement('input');
-                inputFileName.type = 'hidden';
-                inputFileName.name = 'fileName';
-                inputFileName.value = file.name;
-                
-                const inputMimeType = document.createElement('input');
-                inputMimeType.type = 'hidden';
-                inputMimeType.name = 'mimeType';
-                inputMimeType.value = file.type || 'application/octet-stream';
-                
-                const inputFileData = document.createElement('input');
-                inputFileData.type = 'hidden';
-                inputFileData.name = 'fileData';
-                inputFileData.value = base64;
-                
-                form.appendChild(inputData);
-                form.appendChild(inputFileName);
-                form.appendChild(inputMimeType);
-                form.appendChild(inputFileData);
-                
-                const iframe = document.createElement('iframe');
-                iframe.name = 'hidden-iframe';
-                iframe.style.display = 'none';
-                
-                let submitted = false;
-                
-                iframe.onload = () => {
-                    if (submitted) return;
-                    submitted = true;
-                    
-                    console.log('✅ Subida completada');
-                    
-                    setTimeout(() => {
-                        alert('✅ ¡Archivo subido correctamente!\n\n📁 Revisa tu Google Drive');
-                        modal.style.display = 'none';
-                        confirmUpload.innerHTML = '<i class="fas fa-upload"></i> Confirmar subida';
-                        confirmUpload.disabled = false;
-                        resetModal();
-                        
-                        setTimeout(() => {
-                            if (iframe && iframe.parentNode) {
-                                try { document.body.removeChild(iframe); } catch(e) {}
-                            }
-                            if (form && form.parentNode) {
-                                try { document.body.removeChild(form); } catch(e) {}
-                            }
-                        }, 1000);
-                        
-                    }, 1000);
-                };
-                
-                iframe.onerror = () => {
-                    if (submitted) return;
-                    submitted = true;
-                    
-                    alert('❌ Error al subir el archivo');
-                    confirmUpload.innerHTML = '<i class="fas fa-upload"></i> Confirmar subida';
-                    confirmUpload.disabled = false;
-                    
-                    if (iframe && iframe.parentNode) { document.body.removeChild(iframe); }
-                    if (form && form.parentNode) { document.body.removeChild(form); }
-                };
-                
-                document.body.appendChild(iframe);
-                document.body.appendChild(form);
-                
-                setTimeout(() => { form.submit(); }, 100);
-                
-            };
-            
-            reader.onerror = () => {
-                alert('❌ Error al leer el archivo');
-                confirmUpload.innerHTML = '<i class="fas fa-upload"></i> Confirmar subida';
-                confirmUpload.disabled = false;
-            };
-            
-            reader.readAsDataURL(file);
-            
-        } catch (error) {
-            console.error('❌ Error:', error);
-            alert('❌ Error: ' + error.message);
-            confirmUpload.innerHTML = '<i class="fas fa-upload"></i> Confirmar subida';
-            confirmUpload.disabled = false;
-        }
-    });
-
-    // Resetear modal de subida
-    function resetModal() {
-        stepCode.classList.add('active');
-        stepUpload.classList.remove('active');
-        accessCode.value = '';
-        folderSelect.value = '';
-        fileInput.value = '';
-        errorMsg.style.display = 'none';
-    }
-
-    // ==========================================
-    // 🔐 FUNCIONES MODAL DE ROVEX
-    // ==========================================
-
-    // Abrir modal de Rovex
-    rovexLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        rovexModal.style.display = 'flex';
-        rovexPassword.value = '';
-        rovexError.style.display = 'none';
-        rovexPassword.focus();
-    });
-
-    // Cerrar modal de Rovex
-    closeRovexBtn.addEventListener('click', () => { 
-        rovexModal.style.display = 'none'; 
-    });
-
-    // Cerrar modal de Rovex al hacer click fuera
-    rovexModal.addEventListener('click', (e) => { 
-        if (e.target === rovexModal) {
-            rovexModal.style.display = 'none'; 
-        }
-    });
-
-    // Verificar contraseña de Rovex
-    verifyRovexBtn.addEventListener('click', () => {
-        const password = rovexPassword.value.trim();
-        
-        if (password === '211018') {
-            // ✅ Contraseña correcta
-            rovexError.style.display = 'none';
-            rovexModal.style.display = 'none';
-            
-            // Redirigir a la página de destino
-            const targetPage = rovexLink.dataset.target;
-            window.location.href = targetPage;
-        } else {
-            // ❌ Contraseña incorrecta
-            rovexError.style.display = 'block';
-            rovexPassword.value = '';
-            rovexPassword.focus();
-            rovexPassword.style.borderColor = '#ff6b6b';
-            setTimeout(() => rovexPassword.style.borderColor = '', 300);
-        }
-    });
-
-    // Enter para verificar contraseña de Rovex
-    rovexPassword.addEventListener('keypress', (e) => { 
-        if (e.key === 'Enter') verifyRovexBtn.click(); 
-    });
-
-</script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/home.js"></script>
 </body>
 </html>
