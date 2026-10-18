@@ -42,6 +42,7 @@
         doc: ['txt', 'md', 'doc', 'docx', 'odt', 'rtf', 'xls', 'xlsx', 'csv', 'ppt', 'pptx', 'json', 'ini', 'cfg']
     };
     const PREVIEWABLE = new Set(['image', 'video', 'audio', 'pdf', 'doc']);
+    const THUMB_TYPES = new Set(['image', 'video', 'pdf']); // tipos con miniatura de Drive
 
     function typeOf(file) {
         if (file.mimeType === FOLDER_MIME) return 'folder';
@@ -419,10 +420,13 @@
     function thumb(file, type) {
         const t = TYPES[type];
         const box = el('div', { class: 'file-thumb' }, icon(t.icon));
-        if (type === 'image' && file.thumbnailLink && state.view === 'grid') {
-            const img = el('img', { src: file.thumbnailLink, alt: '', loading: 'lazy', referrerpolicy: 'no-referrer' });
+        if (THUMB_TYPES.has(type) && file.thumbnailLink && state.view === 'grid') {
+            // La imagen tiene que estar dentro de la página: con loading="lazy" una imagen
+            // suelta nunca se descarga. Se muestra encima del icono cuando termina de cargar.
+            const img = el('img', { alt: '', class: 'thumb-img', loading: 'lazy', referrerpolicy: 'no-referrer', src: file.thumbnailLink });
+            img.addEventListener('load', () => box.classList.add('has-img'));
             img.addEventListener('error', () => img.remove());
-            img.addEventListener('load', () => box.replaceChildren(img));
+            box.append(img);
         }
         return box;
     }
