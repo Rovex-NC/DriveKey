@@ -41,7 +41,7 @@
 
 [hidden] { display: none !important; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: clip; }
 
 body {
     font-family: var(--font);
@@ -58,6 +58,8 @@ body {
     display: flex;
     flex-direction: column;
     line-height: 1.55;
+    /* Recorta lo que sobresale (p. ej. la cinta girada) sin romper la nav fija */
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
 }
 
