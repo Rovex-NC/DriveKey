@@ -69,14 +69,14 @@
     // MODO ADMINISTRADOR (solo en la página de Rovex)
     // La clave se comprueba en el Apps Script de admin, nunca en el navegador.
     // ==========================================
-    const { ADMIN_URL } = window.DRIVEKEY;
+    const { SCRIPT_URL } = window.DRIVEKEY;
     const isRovex = catKey === 'rovex';
     const ALL_ID = '__all__'; // raíz virtual con todas las categorías
     const session = {
         get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
         set(k, v) { try { v === null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch { /* modo privado */ } }
     };
-    let adminPass = isRovex && ADMIN_URL ? session.get('dk-admin') : null;
+    let adminPass = isRovex && SCRIPT_URL ? session.get('dk-admin') : null;
     const isAdmin = () => !!adminPass;
     const rootEntry = () => isAdmin() ? { id: ALL_ID, name: 'Todo DriveKey' } : { id: cat.folderId, name: 'Inicio' };
     const selected = new Map(); // id -> file
@@ -559,34 +559,15 @@
     // ==========================================
     // ADMINISTRACIÓN: BORRAR (solo Rovex)
     // ==========================================
-    const ADMIN_ERRORS = {
-        bad_password: 'Clave de administrador incorrecta.',
-        locked: 'Demasiados intentos fallidos. Espera 15 minutos.',
-        not_configured: 'Falta la propiedad ADMIN_PASSWORD en el Apps Script.',
-        bad_request: 'Petición no válida.',
-        unknown_action: 'El Apps Script no reconoce la acción. ¿Está actualizado?',
+    // Motivos por los que un elemento concreto no se pudo borrar
+    const DELETE_ERRORS = {
         root: 'no se puede borrar una carpeta principal',
         forbidden: 'está fuera de las carpetas de DriveKey',
         not_found: 'no existe o ya estaba borrado'
     };
 
-    async function adminRequest(action, extra = {}, password = adminPass) {
-        let res;
-        try {
-            // Cuerpo en texto plano: petición "simple", sin preflight CORS.
-            res = await fetch(ADMIN_URL, { method: 'POST', body: JSON.stringify({ action, password, ...extra }) });
-        } catch {
-            throw new Error('No se pudo conectar con el Apps Script de administración.');
-        }
-        if (!res.ok) throw new Error(`El Apps Script respondió con error ${res.status}.`);
-        let data;
-        try { data = await res.json(); } catch { throw new Error('Respuesta inesperada del Apps Script. Revisa que esté desplegado con acceso "Cualquier usuario".'); }
-        if (!data.ok) {
-            const err = new Error(ADMIN_ERRORS[data.error] || data.error || 'Error desconocido');
-            err.code = data.error;
-            throw err;
-        }
-        return data;
+    function adminRequest(action, extra = {}, password = adminPass) {
+        return DK.callScript({ action, password, ...extra });
     }
 
     function enterAdmin(password) {
@@ -663,8 +644,8 @@
             if (confirm('¿Salir del modo administrador?')) { exitAdmin(); toast('Has salido del modo administrador', 'info'); }
             return;
         }
-        if (!ADMIN_URL) {
-            toast('El modo administrador aún no está configurado (falta ADMIN_URL en config.js).', 'error', 6000);
+        if (!SCRIPT_URL) {
+            toast(DK.scriptError('not_deployed').message, 'error', 6000);
             return;
         }
         loginInput.value = '';
@@ -756,7 +737,7 @@
         if (failed.length) {
             const byId = new Map(files.map(f => [f.id, f.name]));
             const first = failed[0];
-            toast(`No se pudo borrar ${failed.length === 1 ? `"${byId.get(first.id) || first.id}"` : `${failed.length} elementos`}: ${ADMIN_ERRORS[first.error] || first.error}`, 'error', 7000);
+            toast(`No se pudo borrar ${failed.length === 1 ? `"${byId.get(first.id) || first.id}"` : `${failed.length} elementos`}: ${DELETE_ERRORS[first.error] || first.error}`, 'error', 7000);
         }
     }
 

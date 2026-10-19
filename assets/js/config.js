@@ -7,17 +7,13 @@ window.DRIVEKEY = {
     // Recomendado: restringirla por "HTTP referrer" a rovex-nc.github.io en Google Cloud Console.
     API_KEY: 'AIzaSyDWMF7tNTmK-66_8IFAptrtB8TIMQndJLk',
 
-    // Google Apps Script que recibe las subidas.
-    SCRIPT_URL: 'https://script.google.com/macros/s/AKfycby18K8YRQKZUBvzdUdUwvl-09md8gElORIGQjVOH0fb8KubIC28FP4vWZBFfBP53hj7WA/exec',
+    // Google Apps Script de DriveKey (subidas + borrar desde Rovex).
+    // Código en apps-script/DriveKey.gs. Pega aquí la URL de su despliegue (termina en /exec).
+    // Vacío = subir y borrar desactivados.
+    SCRIPT_URL: '',
 
-    // Google Apps Script de administración (borrar archivos desde Rovex).
-    // Es un proyecto aparte del de subidas: código en apps-script/DriveKeyAdmin.gs.
-    // Pega aquí la URL de su despliegue (termina en /exec). Vacío = modo admin desactivado.
-    ADMIN_URL: '',
-
-    // Códigos guardados como hash SHA-256 (ya no se ven en texto plano en el código fuente).
-    // Para cambiar uno: calcula el SHA-256 del nuevo código y pégalo aquí.
-    UPLOAD_CODE_HASH: '61c3268ae4de3061999c69bb3033bf49fb6de96d4485a33fbc502e4dae0d85b9',
+    // Contraseña de Rovex guardada como hash SHA-256 (solo oculta la página).
+    // El código de subida y la clave de administrador NO están aquí: los comprueba el Apps Script.
     ROVEX_CODE_HASH: 'b78a31411bf1dfa69210cdba6588da3f6e631e25feea655ddcef638896f6c18b',
 
     // Por encima de este tamaño la subida vía Apps Script suele fallar.
@@ -160,6 +156,47 @@ window.DK = {
             pageToken = data.nextPageToken || '';
         } while (pageToken);
         return files;
+    },
+
+    // Llamada al Apps Script. `body` puede ser:
+    //  - un objeto → se envía como JSON en texto plano
+    //  - URLSearchParams → se envía como formulario (subidas)
+    // Ambos son peticiones "simples" (sin preflight CORS) y la respuesta JSON se puede leer.
+    async callScript(body) {
+        const { SCRIPT_URL } = window.DRIVEKEY;
+        if (!SCRIPT_URL) throw DK.scriptError('not_deployed');
+        let res;
+        try {
+            res = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: body instanceof URLSearchParams ? body : JSON.stringify(body)
+            });
+        } catch {
+            throw new Error('No se pudo conectar con el Apps Script. Revisa tu conexión.');
+        }
+        if (!res.ok) throw new Error(`El Apps Script respondió con error ${res.status}.`);
+        let data;
+        try { data = await res.json(); } catch {
+            throw new Error('Respuesta inesperada del Apps Script. Revisa que esté desplegado con acceso "Cualquier usuario".');
+        }
+        if (!data.ok) throw DK.scriptError(data.error, data.message);
+        return data;
+    },
+
+    scriptError(code, detail) {
+        const messages = {
+            not_deployed: 'Esta función aún no está configurada (falta SCRIPT_URL en config.js).',
+            bad_password: 'Clave incorrecta.',
+            locked: 'Demasiados intentos fallidos. Espera 15 minutos.',
+            not_configured: 'Falta configurar la clave en las propiedades del Apps Script.',
+            bad_folder: 'Carpeta de destino no válida.',
+            missing_file: 'No se recibió el archivo.',
+            unknown_action: 'El Apps Script no reconoce la acción. ¿Está actualizado?',
+            server_error: 'Error en el Apps Script' + (detail ? `: ${detail}` : '.')
+        };
+        const err = new Error(messages[code] || code || 'Error desconocido');
+        err.code = code;
+        return err;
     },
 
     async driveError(res) {

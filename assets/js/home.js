@@ -2,8 +2,8 @@
 // DriveKey · Portada
 // ============================================
 (() => {
-    const { CATEGORIES, SCRIPT_URL, UPLOAD_CODE_HASH, ROVEX_CODE_HASH, UPLOAD_WARN_MB } = window.DRIVEKEY;
-    const { el, icon, sha256, formatSize, toast } = window.DK;
+    const { CATEGORIES, SCRIPT_URL, ROVEX_CODE_HASH, UPLOAD_WARN_MB } = window.DRIVEKEY;
+    const { el, icon, sha256, formatSize, toast, callScript } = window.DK;
     const $ = (id) => document.getElementById(id);
 
     document.getElementById('year').textContent = new Date().getFullYear();
@@ -105,6 +105,7 @@
     const confirmUpload = $('confirmUpload');
     let uploading = false;
     let selectedFile = null;
+    let uploadCode = ''; // código ya validado por el Apps Script (solo en memoria)
 
     // Opciones del desplegable desde config.js (mismo valor que espera el Apps Script)
     Object.values(CATEGORIES).filter(c => c.uploadKey).forEach(c => {
@@ -132,19 +133,33 @@
     }
 
     function openUpload() {
+        if (!SCRIPT_URL) { toast(DK.scriptError('not_deployed').message, 'error', 6000); return; }
         resetUpload();
         uploadModal.showModal();
         accessCode.focus();
     }
     $('openUpload').addEventListener('click', openUpload);
 
+    // El código lo comprueba el Apps Script (ya no está en la web)
+    const verifyCodeBtn = stepCode.querySelector('button[type=submit]');
     stepCode.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const ok = (await sha256(accessCode.value.trim())) === UPLOAD_CODE_HASH;
-        if (!ok) return fail(accessCode, codeError);
-        codeError.hidden = true;
-        showStep(stepUpload);
-        folderSelect.focus();
+        const code = accessCode.value.trim();
+        if (!code) return fail(accessCode, codeError, 'Escribe el código');
+        verifyCodeBtn.disabled = true;
+        verifyCodeBtn.replaceChildren(icon('fa-spinner', 'fa-spin'), ' Comprobando…');
+        try {
+            await callScript({ action: 'checkUploadCode', code });
+            uploadCode = code;
+            codeError.hidden = true;
+            showStep(stepUpload);
+            folderSelect.focus();
+        } catch (err) {
+            fail(accessCode, codeError, err.message);
+        } finally {
+            verifyCodeBtn.disabled = false;
+            verifyCodeBtn.textContent = 'Verificar';
+        }
     });
 
     function setFile(file) {
@@ -195,32 +210,6 @@
         });
     }
 
-    // Envía el formulario al Apps Script a través de un iframe oculto
-    // (mismos campos que antes: folder, fileName, mimeType, fileData).
-    function postToAppsScript(fields) {
-        return new Promise((resolve) => {
-            const name = `dk-upload-${Date.now()}`;
-            const iframe = el('iframe', { name, hidden: true, title: 'upload' });
-            const form = el('form', { method: 'POST', action: SCRIPT_URL, target: name, hidden: true },
-                Object.entries(fields).map(([k, v]) => {
-                    const input = el('input', { type: 'hidden', name: k });
-                    input.value = v; // propiedad, no atributo: más ligero con archivos grandes
-                    return input;
-                }));
-            document.body.append(iframe, form);
-
-            // El iframe vacío dispara un "load" inicial (about:blank). Antes eso marcaba la
-            // subida como terminada antes de tiempo; ahora solo escuchamos después de enviar.
-            setTimeout(() => {
-                iframe.addEventListener('load', () => {
-                    resolve();
-                    setTimeout(() => { iframe.remove(); form.remove(); }, 1000);
-                }, { once: true });
-                form.submit();
-            }, 50);
-        });
-    }
-
     stepUpload.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (uploading) return;
@@ -234,20 +223,29 @@
             setUploading(true, 'Preparando archivo…');
             const base64 = await readAsBase64(file);
             setUploading(true, 'Subiendo… no cierres la página');
-            await postToAppsScript({
+            // Formulario (no JSON) para que Google descodifique bien el nombre del archivo
+            const result = await callScript(new URLSearchParams({
+                action: 'upload',
+                code: uploadCode,
                 folder,
                 fileName: file.name,
                 mimeType: file.type || 'application/octet-stream',
                 fileData: base64
-            });
+            }));
             setUploading(false);
             const cat = Object.values(CATEGORIES).find(c => c.uploadKey === folder);
-            $('doneText').textContent = `"${file.name}" se ha enviado a ${cat ? cat.name : folder}. Puede tardar unos segundos en aparecer en Drive.`;
+            $('doneText').textContent = `"${result.name || file.name}" se ha subido a ${cat ? cat.name : folder}.`;
             showStep(stepDone);
             toast('Archivo subido correctamente', 'success');
         } catch (err) {
             console.error(err);
             setUploading(false);
+            if (err.code === 'bad_password' || err.code === 'locked') {
+                // El código dejó de ser válido: vuelve a pedirlo
+                showStep(stepCode);
+                fail(accessCode, codeError, err.message);
+                return;
+            }
             showUploadError(err.message || 'Error al subir el archivo');
         }
     });
