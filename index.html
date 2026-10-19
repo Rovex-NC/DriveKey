@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DriveKey · ROMs Pokémon, Mods y Emuladores</title>
     <meta name="description" content="DriveKey: ROMs de Pokémon, packs de mods de Minecraft y emuladores, todo alojado en Google Drive y listo para descargar.">
-    <meta name="theme-color" content="#0b0d17">
+    <meta name="theme-color" content="#12101f">
     <meta property="og:title" content="DriveKey">
     <meta property="og:description" content="¿Quieres emular Pokémon o unos buenos packs de mods? Estás donde tienes que estar.">
     <meta property="og:type" content="website">
     <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Pixelify+Sans:wght@500;700&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/home.css">
@@ -32,37 +32,68 @@
 
     <main>
         <section class="hero container">
-            <span class="eyebrow fade-up"><span class="pulse"></span> Biblioteca en Google Drive</span>
-            <h1 class="fade-up" style="animation-delay:.05s">¿Quieres emular <span class="grad">Pokémon</span> o unos buenos <span class="grad">packs de mods</span>?</h1>
-            <p class="hero-sub fade-up" style="animation-delay:.1s">Estás donde tienes que estar. ROMs, mods de Minecraft y los emuladores para usarlos, todo en un sitio y sin registros.</p>
-            <div class="hero-cta fade-up" style="animation-delay:.15s">
-                <a href="Drives/PokemonROMS.html" class="btn btn-primary"><i class="fa-solid fa-gamepad"></i> Ver ROMs Pokémon</a>
-                <a href="#empezar" class="btn btn-ghost"><i class="fa-solid fa-route"></i> Cómo empezar</a>
+            <div class="hero-copy">
+                <span class="eyebrow fade-up"><span class="blink">▶</span> PRESS START</span>
+                <h1 class="fade-up" style="animation-delay:.05s">¿Quieres emular <mark>Pokémon</mark> o unos buenos <mark class="alt">packs de mods</mark>?</h1>
+                <p class="hero-sub fade-up" style="animation-delay:.1s">Estás donde tienes que estar. ROMs, mods de Minecraft y los emuladores para usarlos, todo en un sitio y sin registros.</p>
+                <div class="hero-cta fade-up" style="animation-delay:.15s">
+                    <a href="Drives/PokemonROMS.html" class="btn btn-primary"><i class="fa-solid fa-gamepad"></i> Ver ROMs Pokémon</a>
+                    <a href="#empezar" class="btn btn-ghost"><i class="fa-solid fa-route"></i> Cómo empezar</a>
+                </div>
+            </div>
+
+            <!-- Consola portátil dibujada solo con CSS (decorativa) -->
+            <div class="handheld" aria-hidden="true">
+                <div class="hh-screen-frame">
+                    <div class="hh-screen">
+                        <span class="hh-line">DRIVEKEY v2</span>
+                        <span class="hh-line">&gt; ROMS ........ OK</span>
+                        <span class="hh-line">&gt; MODS ........ OK</span>
+                        <span class="hh-line">&gt; EMULADORES .. OK</span>
+                        <span class="hh-line hh-go">&gt; ¡A JUGAR!<span class="blink">_</span></span>
+                    </div>
+                    <span class="hh-led"></span>
+                </div>
+                <div class="hh-controls">
+                    <span class="hh-dpad"></span>
+                    <span class="hh-ab"><span>B</span><span>A</span></span>
+                </div>
+                <div class="hh-bottom">
+                    <span class="hh-pill"></span><span class="hh-pill"></span>
+                    <span class="hh-speaker"></span>
+                </div>
             </div>
         </section>
 
+        <div class="ticker" aria-hidden="true">
+            <div class="ticker-track">
+                <span>.NDS</span><span>.GBA</span><span>.ZIP</span><span>.JAR</span><span>.EXE</span><span>.PDF</span><span>.7Z</span><span>.3DS</span><span>.ISO</span><span>.RAR</span>
+                <span>.NDS</span><span>.GBA</span><span>.ZIP</span><span>.JAR</span><span>.EXE</span><span>.PDF</span><span>.7Z</span><span>.3DS</span><span>.ISO</span><span>.RAR</span>
+            </div>
+        </div>
+
         <section class="container" aria-labelledby="catTitle">
-            <h2 id="catTitle" class="section-title">Explora la biblioteca</h2>
+            <h2 id="catTitle" class="section-title"><span class="section-tag">SELECT</span> Elige tu cartucho</h2>
             <div class="cards" id="categoryCards">
                 <!-- Se rellena desde assets/js/home.js con los datos de config.js -->
             </div>
         </section>
 
         <section class="container steps-wrap" id="empezar" aria-labelledby="stepsTitle">
-            <h2 id="stepsTitle" class="section-title">Cómo empezar en 3 pasos</h2>
+            <h2 id="stepsTitle" class="section-title"><span class="section-tag">TUTORIAL</span> Cómo empezar en 3 niveles</h2>
             <ol class="steps">
                 <li class="step">
-                    <span class="step-num">1</span>
+                    <span class="step-num">NIVEL 1</span>
                     <h3>Descarga un emulador</h3>
                     <p>Para ROMs de DS (<code>.nds</code>) usa <strong>melonDS</strong>; para GBA (<code>.gba</code>), <strong>mGBA</strong>. Los tienes en <a href="Drives/Emuladores.html">Emuladores</a>.</p>
                 </li>
                 <li class="step">
-                    <span class="step-num">2</span>
+                    <span class="step-num">NIVEL 2</span>
                     <h3>Elige tu juego o mod</h3>
                     <p>Entra en una categoría, busca por nombre y pulsa <i class="fa-solid fa-download"></i> para descargar. Si es un <code>.zip</code>, descomprímelo primero.</p>
                 </li>
                 <li class="step">
-                    <span class="step-num">3</span>
+                    <span class="step-num">NIVEL 3</span>
                     <h3>Ábrelo y a jugar</h3>
                     <p>Abre la ROM desde el emulador (<em>Archivo → Abrir</em>). Los mods de Minecraft van en la carpeta <code>mods</code> de tu instancia.</p>
                 </li>

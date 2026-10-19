@@ -26,7 +26,7 @@ window.DRIVEKEY = {
             short: 'Pokémon',
             description: 'De Rojo Fuego a Negro, más hacks como Pokémon Z y Añil. Listas para emular.',
             icon: 'fa-gamepad',
-            accent: '#ef4444',
+            accent: '#ff5a5f',
             folderId: '1scEmOVW-St9EtRDpKjHEe93CIk8A7RcI',
             page: 'Drives/PokemonROMS.html',
             uploadKey: 'Pokemon'
@@ -36,7 +36,7 @@ window.DRIVEKEY = {
             short: 'Minecraft',
             description: 'Packs de mods (Cobblemon y más), texturas y parches para Forge y Fabric.',
             icon: 'fa-cube',
-            accent: '#22c55e',
+            accent: '#4ade80',
             folderId: '1SPCGjjv_m_K0tTzSNNWNhrC62H1PbjRX',
             page: 'Drives/Minecraftmods.html',
             uploadKey: 'minecraft'
@@ -46,7 +46,7 @@ window.DRIVEKEY = {
             short: 'Emuladores',
             description: 'Emuladores como melonDS y el software necesario para abrir los archivos.',
             icon: 'fa-screwdriver-wrench',
-            accent: '#38bdf8',
+            accent: '#38d6ff',
             folderId: '1ZbiAsEPNZ-Lsl-1r1-lo7pt5JJAsa9GV',
             page: 'Drives/Emuladores.html',
             uploadKey: 'emuladores'
