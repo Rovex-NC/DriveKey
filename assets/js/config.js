@@ -10,7 +10,7 @@ window.DRIVEKEY = {
     // Google Apps Script de DriveKey (subidas + borrar desde Rovex).
     // Código en apps-script/DriveKey.gs. Pega aquí la URL de su despliegue (termina en /exec).
     // Vacío = subir y borrar desactivados.
-    SCRIPT_URL: '',
+    SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxp89iRMSX1tGctml9TczRKwkigDJ_vkitKPaqqAEvy-SaQqAz0u3NM0TXQM12EwxClTg/exec',
 
     // Contraseña de Rovex guardada como hash SHA-256 (solo oculta la página).
     // El código de subida y la clave de administrador NO están aquí: los comprueba el Apps Script.
