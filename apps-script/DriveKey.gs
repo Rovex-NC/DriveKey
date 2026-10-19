@@ -19,10 +19,10 @@
 
 // IDs de las carpetas (lo que va después de /folders/ en el enlace de Drive)
 const FOLDERS = {
-  Pokemon:    'PEGA_AQUI_ID_POKEMON',
-  minecraft:  'PEGA_AQUI_ID_MINECRAFT',
-  emuladores: 'PEGA_AQUI_ID_EMULADORES',
-  rovex:      'PEGA_AQUI_ID_ROVEX'
+  Pokemon:    '1scEmOVW-St9EtRDpKjHEe93CIk8A7RcI',
+  minecraft:  '1SPCGjjv_m_K0tTzSNNWNhrC62H1PbjRX',
+  emuladores: '1ZbiAsEPNZ-Lsl-1r1-lo7pt5JJAsa9GV',
+  rovex:      '1D_qApyuSNSVLYqEmM5i2lmsYZC8-Iu2J'
 };
 
 // Carpetas a las que se puede subir desde la web
