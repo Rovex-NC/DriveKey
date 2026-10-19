@@ -5,7 +5,7 @@
 window.DRIVEKEY = {
     // Clave pública de la API de Google Drive (solo lectura).
     // Recomendado: restringirla por "HTTP referrer" a rovex-nc.github.io en Google Cloud Console.
-    API_KEY: 'AIzaSyDWMF7tNTmK-66_8IFAptrtB8TIMQndJLk',
+    API_KEY: 'AIzaSyCU4I2C3IOKeOpzmTiacU770I8rHukP2zk',
 
     // Google Apps Script de DriveKey (subidas + borrar desde Rovex).
     // Código en apps-script/DriveKey.gs. Pega aquí la URL de su despliegue (termina en /exec).
