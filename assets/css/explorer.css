@@ -228,3 +228,12 @@ dialog.preview:not([open]) { display: none; }
 .del-list li.more { color: var(--text-3); justify-content: center; }
 .del-warn { color: var(--yellow); font-size: .9rem; margin-bottom: 14px; font-weight: 500; }
 .del-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
+
+/* ============ ENLACES EXTERNOS ============ */
+.link-host { color: #fb923c; font-weight: 700; }
+.link-url {
+    margin: 14px auto 0; max-width: 560px; padding: 8px 12px; border-radius: 8px;
+    background: var(--ink); border: 2px solid var(--line);
+    font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: .82rem;
+    color: var(--text-2); word-break: break-all;
+}

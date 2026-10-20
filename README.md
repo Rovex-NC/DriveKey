@@ -55,6 +55,12 @@ Si más adelante cambias el código del script: **Implementar → Gestionar impl
 
 ## Tareas habituales
 
+### Añadir un enlace a una descarga externa
+Para archivos que no están en tu Drive (MEGA, MediaFire, CurseForge, Modrinth, la web de un emulador…):
+**Subir archivos** → pestaña **Enlace** → carpeta, nombre y URL (`https://`).
+
+El Apps Script guarda en la carpeta un acceso directo `Nombre.url` con la URL también en la descripción del archivo. La web lo muestra como **Enlace**, con el dominio de destino y un botón **Abrir**. Se borra desde Rovex como cualquier archivo. Solo se aceptan enlaces `https://`.
+
 ### Añadir una categoría nueva
 1. Crea la carpeta, hazla pública y copia su ID.
 2. Añade una entrada en `CATEGORIES` dentro de `assets/js/config.js`.

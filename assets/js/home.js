@@ -103,9 +103,37 @@
     const sizeWarn = $('sizeWarn');
     const uploadError = $('uploadError');
     const confirmUpload = $('confirmUpload');
+    const fileFields = $('fileFields');
+    const linkFields = $('linkFields');
+    const linkName = $('linkName');
+    const linkUrlInput = $('linkUrl');
+    const uploadSub = $('uploadSub');
+    const modeTabs = [...stepUpload.querySelectorAll('.mode-tab')];
     let uploading = false;
     let selectedFile = null;
     let uploadCode = ''; // código ya validado por el Apps Script (solo en memoria)
+    let mode = 'file';   // 'file' = subir archivo · 'link' = añadir enlace externo
+
+    function setMode(next) {
+        mode = next;
+        modeTabs.forEach(t => {
+            const on = t.dataset.mode === next;
+            t.classList.toggle('active', on);
+            t.setAttribute('aria-selected', String(on));
+        });
+        fileFields.hidden = next !== 'file';
+        linkFields.hidden = next !== 'link';
+        uploadError.hidden = true;
+        uploadSub.textContent = next === 'link'
+            ? 'Se añadirá un enlace a una descarga externa en la carpeta elegida.'
+            : 'El archivo se guardará en la carpeta de Drive elegida.';
+        if (next === 'link') sizeWarn.hidden = true; else setFile(selectedFile);
+        setUploading(false);
+    }
+    modeTabs.forEach(t => t.addEventListener('click', () => {
+        setMode(t.dataset.mode);
+        (t.dataset.mode === 'link' ? linkName : folderSelect).focus();
+    }));
 
     // Opciones del desplegable desde config.js (mismo valor que espera el Apps Script)
     Object.values(CATEGORIES).filter(c => c.uploadKey).forEach(c => {
@@ -129,7 +157,10 @@
         codeError.hidden = true;
         uploadError.hidden = true;
         folderSelect.value = '';
+        linkName.value = '';
+        linkUrlInput.value = '';
         setFile(null);
+        setMode('file');
     }
 
     function openUpload() {
@@ -198,7 +229,35 @@
         confirmUpload.disabled = on;
         folderSelect.disabled = on;
         fileInput.disabled = on;
-        confirmUpload.replaceChildren(icon(on ? 'fa-spinner' : 'fa-upload', on ? 'fa-spin' : ''), ' ' + (label || 'Confirmar subida'));
+        linkName.disabled = on;
+        linkUrlInput.disabled = on;
+        modeTabs.forEach(t => { t.disabled = on; });
+        const idle = mode === 'link' ? ['fa-link', 'Añadir enlace'] : ['fa-upload', 'Confirmar subida'];
+        confirmUpload.replaceChildren(icon(on ? 'fa-spinner' : idle[0], on ? 'fa-spin' : ''), ' ' + (label || idle[1]));
+    }
+
+    // Devuelve la URL normalizada si es https://, o null
+    function validHttpsUrl(value) {
+        try {
+            const u = new URL(value.trim());
+            return u.protocol === 'https:' && u.hostname.includes('.') ? u.href : null;
+        } catch { return null; }
+    }
+
+    async function submitLink(folder) {
+        const name = linkName.value.trim();
+        const url = validHttpsUrl(linkUrlInput.value);
+        if (!name) { showUploadError('Escribe un nombre para el enlace'); linkName.focus(); return; }
+        if (!url) { showUploadError('El enlace no es válido. Tiene que empezar por https://'); linkUrlInput.focus(); return; }
+
+        setUploading(true, 'Añadiendo enlace…');
+        const result = await callScript({ action: 'addLink', code: uploadCode, folder, name, url });
+        setUploading(false);
+        const cat = Object.values(CATEGORIES).find(c => c.uploadKey === folder);
+        stepDone.querySelector('.modal-title').textContent = '¡Enlace añadido!';
+        $('doneText').textContent = `"${result.name || name}" ya aparece en ${cat ? cat.name : folder} como enlace a ${new URL(url).hostname.replace(/^www\./, '')}.`;
+        showStep(stepDone);
+        toast('Enlace añadido correctamente', 'success');
     }
 
     function readAsBase64(file) {
@@ -215,10 +274,26 @@
         if (uploading) return;
         const folder = folderSelect.value;
         if (!folder) { showUploadError('Selecciona una carpeta de destino'); folderSelect.focus(); return; }
-        if (!selectedFile) { showUploadError('Selecciona un archivo'); return; }
-
-        const file = selectedFile;
         uploadError.hidden = true;
+
+        if (mode === 'link') {
+            try {
+                await submitLink(folder);
+            } catch (err) {
+                console.error(err);
+                setUploading(false);
+                if (err.code === 'bad_password' || err.code === 'locked') {
+                    showStep(stepCode);
+                    fail(accessCode, codeError, err.message);
+                    return;
+                }
+                showUploadError(err.message || 'Error al añadir el enlace');
+            }
+            return;
+        }
+
+        if (!selectedFile) { showUploadError('Selecciona un archivo'); return; }
+        const file = selectedFile;
         try {
             setUploading(true, 'Preparando archivo…');
             const base64 = await readAsBase64(file);
@@ -234,6 +309,7 @@
             }));
             setUploading(false);
             const cat = Object.values(CATEGORIES).find(c => c.uploadKey === folder);
+            stepDone.querySelector('.modal-title').textContent = '¡Archivo subido!';
             $('doneText').textContent = `"${result.name || file.name}" se ha subido a ${cat ? cat.name : folder}.`;
             showStep(stepDone);
             toast('Archivo subido correctamente', 'success');

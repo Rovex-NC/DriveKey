@@ -283,3 +283,18 @@ code {
     .ticker { margin-bottom: 48px; }
     .cards { gap: 30px; }
 }
+
+/* ---- Pestañas Archivo / Enlace ---- */
+.mode-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
+.mode-tab {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px; border-radius: var(--radius-sm); cursor: pointer;
+    background: var(--bg); color: var(--text-2);
+    border: 2px solid var(--line); font-weight: 700;
+    transition: background .15s, color .15s, transform .1s;
+}
+.mode-tab:hover:not(.active):not(:disabled) { color: var(--text); border-color: var(--line-strong); }
+.mode-tab.active { background: var(--yellow); color: var(--ink); border-color: var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+.mode-tab:disabled { opacity: .6; cursor: not-allowed; }
+.link-hint { display: flex; gap: 8px; align-items: baseline; color: var(--text-3); font-size: .86rem; margin: -6px 0 16px; }
+.link-hint i { color: #fb923c; }

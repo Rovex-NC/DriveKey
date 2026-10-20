@@ -137,7 +137,7 @@ window.DK = {
     // Llamada a la API de Drive con paginación completa (antes se cortaba en 1000 elementos).
     async listFolder(folderId, signal) {
         const { API_KEY } = window.DRIVEKEY;
-        const fields = 'nextPageToken,files(id,name,mimeType,size,modifiedTime,webViewLink,thumbnailLink)';
+        const fields = 'nextPageToken,files(id,name,mimeType,size,modifiedTime,webViewLink,thumbnailLink,description)';
         let files = [];
         let pageToken = '';
         do {
@@ -191,6 +191,8 @@ window.DK = {
             not_configured: 'Falta configurar la clave en las propiedades del Apps Script.',
             bad_folder: 'Carpeta de destino no válida.',
             missing_file: 'No se recibió el archivo.',
+            bad_url: 'El enlace no es válido. Tiene que empezar por https://',
+            missing_name: 'Escribe un nombre para el enlace.',
             unknown_action: 'El Apps Script no reconoce la acción. ¿Está actualizado?',
             server_error: 'Error en el Apps Script' + (detail ? `: ${detail}` : '.')
         };

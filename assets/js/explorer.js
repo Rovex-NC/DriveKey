@@ -21,6 +21,7 @@
     // ==========================================
     const TYPES = {
         folder:  { label: 'Carpeta',     icon: 'fa-folder',          color: '#f5b942' },
+        link:    { label: 'Enlace',      icon: 'fa-arrow-up-right-from-square', color: '#fb923c' },
         rom:     { label: 'ROM',         icon: 'fa-gamepad',         color: '#ef4444' },
         mod:     { label: 'Mod',         icon: 'fa-cube',            color: '#22c55e' },
         archive: { label: 'Comprimido',  icon: 'fa-file-zipper',     color: '#f59e0b' },
@@ -44,8 +45,21 @@
     const PREVIEWABLE = new Set(['image', 'video', 'audio', 'pdf', 'doc']);
     const THUMB_TYPES = new Set(['image', 'video', 'pdf']); // tipos con miniatura de Drive
 
+    // Enlaces: archivos .url creados por el Apps Script, con la URL en la descripción.
+    // Solo se aceptan https:// (nunca javascript: ni similares).
+    function linkUrl(file) {
+        if (!file.name || !/\.url$/i.test(file.name) || !file.description) return null;
+        try {
+            const u = new URL(file.description.trim());
+            return u.protocol === 'https:' ? u.href : null;
+        } catch { return null; }
+    }
+    const linkHost = (file) => { try { return new URL(linkUrl(file)).hostname.replace(/^www\./, ''); } catch { return ''; } };
+    const displayName = (file) => linkUrl(file) ? file.name.replace(/\.url$/i, '') : file.name;
+
     function typeOf(file) {
         if (file.mimeType === FOLDER_MIME) return 'folder';
+        if (linkUrl(file)) return 'link';
         const ext = (file.name.split('.').pop() || '').toLowerCase();
         for (const [type, list] of Object.entries(EXT)) if (list.includes(ext)) return type;
         const m = file.mimeType || '';
@@ -435,20 +449,26 @@
         const type = typeOf(file);
         const t = TYPES[type];
         const isFolder = type === 'folder';
+        const isLink = type === 'link';
+        const name = displayName(file);
         const meta = el('div', { class: 'file-meta' }, el('span', { class: 'tag' }, t.label));
-        if (!isFolder && file.size) meta.append(el('span', {}, '·'), el('span', {}, formatSize(file.size)));
+        if (isLink) meta.append(el('span', {}, '·'), el('span', { class: 'link-host' }, linkHost(file)));
+        else if (!isFolder && file.size) meta.append(el('span', {}, '·'), el('span', {}, formatSize(file.size)));
         if (file.modifiedTime) meta.append(el('span', {}, '·'), el('span', {}, formatDate(file.modifiedTime)));
 
         const deletable = isAdmin() && !file.virtualRoot;
+        const mainAction = isFolder ? null : isLink
+            ? el('a', { class: 'icon-btn', href: linkUrl(file), target: '_blank', rel: 'noopener noreferrer', title: `Abrir ${linkHost(file)}`, 'aria-label': `Abrir enlace ${name}`, onclick: (e) => e.stopPropagation() }, icon('fa-arrow-up-right-from-square'))
+            : el('a', { class: 'icon-btn', href: links.download(file), target: '_blank', rel: 'noopener', title: 'Descargar', 'aria-label': `Descargar ${name}`, onclick: (e) => { e.stopPropagation(); if (Number(file.size) > BIG_FILE) toast('Archivo grande: Google te pedirá confirmar la descarga', 'info', 5000); } }, icon('fa-download'));
         const actions = (isFolder && !deletable) ? null : el('div', { class: 'file-actions' },
-            isFolder ? null : el('a', { class: 'icon-btn', href: links.download(file), target: '_blank', rel: 'noopener', title: 'Descargar', 'aria-label': `Descargar ${file.name}`, onclick: (e) => { e.stopPropagation(); if (Number(file.size) > BIG_FILE) toast('Archivo grande: Google te pedirá confirmar la descarga', 'info', 5000); } }, icon('fa-download')),
-            isFolder ? null : el('button', { type: 'button', class: 'icon-btn', title: 'Copiar enlace', 'aria-label': `Copiar enlace de ${file.name}`, onclick: (e) => { e.stopPropagation(); copyLink(file); } }, icon('fa-link')),
-            deletable ? el('button', { type: 'button', class: 'icon-btn danger', title: 'Borrar', 'aria-label': `Borrar ${file.name}`, onclick: (e) => { e.stopPropagation(); confirmDelete([file]); } }, icon('fa-trash-can')) : null
+            mainAction,
+            isFolder ? null : el('button', { type: 'button', class: 'icon-btn', title: 'Copiar enlace', 'aria-label': `Copiar enlace de ${name}`, onclick: (e) => { e.stopPropagation(); copyLink(file); } }, icon('fa-link')),
+            deletable ? el('button', { type: 'button', class: 'icon-btn danger', title: 'Borrar', 'aria-label': `Borrar ${name}`, onclick: (e) => { e.stopPropagation(); confirmDelete([file]); } }, icon('fa-trash-can')) : null
         );
 
         let check = null;
         if (deletable) {
-            check = el('input', { type: 'checkbox', class: 'file-check', 'aria-label': `Seleccionar ${file.name}`, title: 'Seleccionar' });
+            check = el('input', { type: 'checkbox', class: 'file-check', 'aria-label': `Seleccionar ${name}`, title: 'Seleccionar' });
             check.checked = selected.has(file.id);
             check.addEventListener('click', (e) => e.stopPropagation());
             check.addEventListener('change', () => {
@@ -459,14 +479,14 @@
         }
 
         const card = el('div', {
-            class: `file${selected.has(file.id) ? ' selected' : ''}`, role: 'button', tabindex: '0', title: file.name,
+            class: `file${selected.has(file.id) ? ' selected' : ''}`, role: 'button', tabindex: '0', title: name,
             style: { '--tc': t.color, animationDelay: `${Math.min(i, 20) * 15}ms` },
-            'aria-label': `${t.label}: ${file.name}`
+            'aria-label': `${t.label}: ${name}`
         },
             check,
             thumb(file, type),
             el('div', { class: 'file-body' },
-                el('div', { class: 'file-name' }, file.name),
+                el('div', { class: 'file-name' }, name),
                 meta,
                 path && path.length > 1 ? el('div', { class: 'file-path' }, icon('fa-folder-tree'), ' ', path.slice(1).map(p => p.name).join(' / ')) : null
             ),
@@ -489,11 +509,12 @@
     }
 
     async function copyLink(file) {
+        const url = linkUrl(file) || links.view(file); // en los enlaces, la URL de destino
         try {
-            await navigator.clipboard.writeText(links.view(file));
+            await navigator.clipboard.writeText(url);
             toast('Enlace copiado', 'success');
         } catch {
-            prompt('Copia este enlace:', links.view(file));
+            prompt('Copia este enlace:', url);
         }
     }
 
@@ -507,7 +528,7 @@
     const pvNote = el('span', { class: 'note' });
     const pvDownload = el('a', { class: 'btn btn-primary', target: '_blank', rel: 'noopener' }, icon('fa-download'), 'Descargar');
     const pvOpen = el('a', { class: 'btn btn-ghost', target: '_blank', rel: 'noopener' }, icon('fa-brands fa-google-drive'), 'Abrir en Drive');
-    pvDownload.addEventListener('click', () => { if (pvNote.textContent) toast('Google te pedirá confirmar la descarga', 'info', 5000); });
+    pvDownload.addEventListener('click', () => { if (pvDownload.dataset.big) toast('Google te pedirá confirmar la descarga', 'info', 5000); });
     const pvCopy = el('button', { type: 'button', class: 'btn btn-ghost' }, icon('fa-link'), 'Copiar enlace');
     const preview = el('dialog', { class: 'modal preview', 'aria-label': 'Vista previa' },
         el('div', { class: 'pv-head' }, pvThumb, el('div', { class: 'pv-title' }, pvName, pvMeta),
@@ -524,12 +545,38 @@
         const t = TYPES[type];
         pvThumb.style.setProperty('--tc', t.color);
         pvThumb.replaceChildren(icon(t.icon));
-        pvName.textContent = file.name;
+        pvName.textContent = displayName(file);
+        pvCopy.onclick = () => copyLink(file);
+
+        if (type === 'link') {
+            const url = linkUrl(file);
+            const host = linkHost(file);
+            pvMeta.textContent = [t.label, host, formatDate(file.modifiedTime)].filter(Boolean).join(' · ');
+            pvDownload.href = url;
+            pvDownload.rel = 'noopener noreferrer';
+            pvDownload.replaceChildren(icon('fa-arrow-up-right-from-square'), 'Abrir enlace');
+            delete pvDownload.dataset.big;
+            pvOpen.hidden = true;
+            pvNote.textContent = `Enlace externo: se abrirá ${host} en otra pestaña.`;
+            pvBody.className = 'pv-body info';
+            pvBody.replaceChildren(el('div', {},
+                el('div', { class: 'file-thumb', style: { '--tc': t.color } }, icon(t.icon)),
+                el('h3', { style: { color: 'var(--text)', marginBottom: '6px' } }, `Descarga externa en ${host}`),
+                el('p', {}, 'Este archivo no está en DriveKey: el enlace te lleva a la web donde se descarga.'),
+                el('p', { class: 'link-url' }, url)));
+            preview.showModal();
+            return;
+        }
+
         pvMeta.textContent = [t.label, file.size ? formatSize(file.size) : '', formatDate(file.modifiedTime)].filter(Boolean).join(' · ');
         pvDownload.href = links.download(file);
+        pvDownload.rel = 'noopener';
+        pvDownload.replaceChildren(icon('fa-download'), 'Descargar');
+        pvOpen.hidden = false;
         pvOpen.href = links.view(file);
-        pvCopy.onclick = () => copyLink(file);
-        pvNote.textContent = Number(file.size) > BIG_FILE
+        const big = Number(file.size) > BIG_FILE;
+        if (big) pvDownload.dataset.big = '1'; else delete pvDownload.dataset.big;
+        pvNote.textContent = big
             ? 'Archivo grande: Google mostrará un aviso de antivirus. Pulsa "Descargar de todos modos".'
             : '';
 
@@ -686,7 +733,7 @@
         const shown = files.slice(0, 8);
         delList.replaceChildren(...shown.map(f => {
             const t = TYPES[typeOf(f)];
-            return el('li', { style: { '--tc': t.color } }, icon(t.icon), el('span', {}, f.name));
+            return el('li', { style: { '--tc': t.color } }, icon(t.icon), el('span', {}, displayName(f)));
         }));
         if (files.length > shown.length) delList.append(el('li', { class: 'more' }, `y ${files.length - shown.length} más…`));
         const folders = files.filter(f => f.mimeType === FOLDER_MIME).length;
@@ -735,7 +782,7 @@
 
         if (okIds.size) toast(okIds.size === 1 ? 'Movido a la papelera' : `${okIds.size} elementos movidos a la papelera`, 'success');
         if (failed.length) {
-            const byId = new Map(files.map(f => [f.id, f.name]));
+            const byId = new Map(files.map(f => [f.id, displayName(f)]));
             const first = failed[0];
             toast(`No se pudo borrar ${failed.length === 1 ? `"${byId.get(first.id) || first.id}"` : `${failed.length} elementos`}: ${DELETE_ERRORS[first.error] || first.error}`, 'error', 7000);
         }

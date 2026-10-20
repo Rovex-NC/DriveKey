@@ -133,9 +133,14 @@
             <div class="modal-head">
                 <div>
                     <h3 class="modal-title"><i class="fa-solid fa-folder-plus"></i> Subir contenido</h3>
-                    <p class="modal-sub">El archivo se guardará en la carpeta de Drive elegida.</p>
+                    <p class="modal-sub" id="uploadSub">El archivo se guardará en la carpeta de Drive elegida.</p>
                 </div>
                 <button type="button" class="icon-btn" data-close aria-label="Cerrar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="mode-tabs" role="tablist" aria-label="Qué quieres añadir">
+                <button type="button" class="mode-tab active" role="tab" aria-selected="true" data-mode="file"><i class="fa-solid fa-file-arrow-up"></i> Archivo</button>
+                <button type="button" class="mode-tab" role="tab" aria-selected="false" data-mode="link"><i class="fa-solid fa-link"></i> Enlace</button>
             </div>
 
             <label class="field">
@@ -145,7 +150,7 @@
                 </select>
             </label>
 
-            <div class="field">
+            <div class="field" id="fileFields">
                 <span class="field-label">Archivo</span>
                 <label class="dropzone" id="dropzone">
                     <input type="file" id="fileInput" class="sr-only">
@@ -153,6 +158,18 @@
                     <span class="dz-text"><strong>Arrastra un archivo aquí</strong> o haz clic para elegirlo</span>
                     <span class="dz-file" id="fileInfo" hidden></span>
                 </label>
+            </div>
+
+            <div id="linkFields" hidden>
+                <label class="field">
+                    <span class="field-label">Nombre</span>
+                    <input type="text" class="input" id="linkName" placeholder="Ej: Pokémon Ultra Violeta (ROM 2 GB)" maxlength="200" autocomplete="off">
+                </label>
+                <label class="field">
+                    <span class="field-label">Enlace de descarga</span>
+                    <input type="url" class="input" id="linkUrl" placeholder="https://mega.nz/…" maxlength="2000" autocomplete="off" inputmode="url">
+                </label>
+                <p class="link-hint" id="linkHint"><i class="fa-solid fa-circle-info"></i> <span>Para archivos alojados fuera (MEGA, MediaFire, CurseForge, Modrinth…). Tiene que empezar por <code>https://</code>.</span></p>
             </div>
             <p class="form-error" id="uploadError" hidden></p>
             <p class="upload-warn" id="sizeWarn" hidden><i class="fa-solid fa-triangle-exclamation"></i> <span></span></p>

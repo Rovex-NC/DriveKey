@@ -45,6 +45,7 @@ function doPost(e) {
     switch (req.action) {
       case 'checkUploadCode': return json_(checkPassword_('UPLOAD_PASSWORD', req.code, 'upload'));
       case 'upload':          return json_(upload_(req));
+      case 'addLink':         return json_(addLink_(req));
       case 'verify':          return json_(checkPassword_('ADMIN_PASSWORD', req.password, 'admin'));
       case 'delete':          return json_(delete_(req));
       default:                return json_({ ok: false, error: 'unknown_action' });
@@ -106,22 +107,51 @@ function upload_(req) {
   const file = folder.createFile(blob);
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 
-  if (EMAIL_DESTINO) {
-    try {
-      MailApp.sendEmail({
-        to: EMAIL_DESTINO,
-        subject: '✅ Archivo subido - DriveKey',
-        htmlBody: '<h2>¡Archivo subido!</h2>' +
-                  '<p><strong>Archivo:</strong> ' + escapeHtml_(file.getName()) + '</p>' +
-                  '<p><strong>Carpeta:</strong> ' + escapeHtml_(folder.getName()) + '</p>' +
-                  '<p><a href="' + file.getUrl() + '">Ver archivo</a></p>'
-      });
-    } catch (err) {
-      console.warn('Email no enviado: ' + err);
-    }
-  }
-
+  notifyUpload_('✅ Archivo subido - DriveKey', file, folder);
   return { ok: true, name: file.getName(), url: file.getUrl(), folder: folder.getName() };
+}
+
+// ==========================================
+// ENLACES (para archivos que están fuera de tu Drive)
+// Se guardan como acceso directo de Windows (.url) y la URL va también en la
+// descripción del archivo, que es lo que lee la web.
+// ==========================================
+function addLink_(req) {
+  const auth = checkPassword_('UPLOAD_PASSWORD', req.code, 'upload');
+  if (!auth.ok) return auth;
+
+  if (UPLOAD_KEYS.indexOf(req.folder) === -1) return { ok: false, error: 'bad_folder' };
+
+  const url = String(req.url || '').trim();
+  if (!/^https:\/\/[^\s"<>]+$/i.test(url) || url.length > 2000) return { ok: false, error: 'bad_url' };
+
+  const name = String(req.name || '').trim().replace(/[\\/:*?"<>|]/g, '-').slice(0, 200);
+  if (!name) return { ok: false, error: 'missing_name' };
+
+  const folder = DriveApp.getFolderById(FOLDERS[req.folder]);
+  const file = folder.createFile(name + '.url', '[InternetShortcut]\r\nURL=' + url + '\r\n', 'application/internet-shortcut');
+  file.setDescription(url);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+  notifyUpload_('🔗 Enlace añadido - DriveKey', file, folder, url);
+  return { ok: true, name: name, folder: folder.getName() };
+}
+
+function notifyUpload_(subject, file, folder, link) {
+  if (!EMAIL_DESTINO) return;
+  try {
+    MailApp.sendEmail({
+      to: EMAIL_DESTINO,
+      subject: subject,
+      htmlBody: '<h2>' + escapeHtml_(subject.replace(' - DriveKey', '')) + '</h2>' +
+                '<p><strong>Nombre:</strong> ' + escapeHtml_(file.getName()) + '</p>' +
+                '<p><strong>Carpeta:</strong> ' + escapeHtml_(folder.getName()) + '</p>' +
+                (link ? '<p><strong>Enlace:</strong> ' + escapeHtml_(link) + '</p>' : '') +
+                '<p><a href="' + file.getUrl() + '">Ver en Drive</a></p>'
+    });
+  } catch (err) {
+    console.warn('Email no enviado: ' + err);
+  }
 }
 
 // ==========================================
